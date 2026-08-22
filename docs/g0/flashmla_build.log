@@ -1,0 +1,379 @@
+Using pip 24.0 from /usr/lib/python3/dist-packages/pip (python 3.12)
+Defaulting to user installation because normal site-packages is not writeable
+Obtaining file:///home/ubuntu/g0/FlashMLA
+  Preparing metadata (setup.py): started
+  Running command python setup.py egg_info
+  Compiling using NVCC 12.8
+  running egg_info
+  creating /tmp/pip-pip-egg-info-3kylolyr/flash_mla.egg-info
+  writing /tmp/pip-pip-egg-info-3kylolyr/flash_mla.egg-info/PKG-INFO
+  writing dependency_links to /tmp/pip-pip-egg-info-3kylolyr/flash_mla.egg-info/dependency_links.txt
+  writing top-level names to /tmp/pip-pip-egg-info-3kylolyr/flash_mla.egg-info/top_level.txt
+  writing manifest file '/tmp/pip-pip-egg-info-3kylolyr/flash_mla.egg-info/SOURCES.txt'
+  reading manifest file '/tmp/pip-pip-egg-info-3kylolyr/flash_mla.egg-info/SOURCES.txt'
+  adding license file 'LICENSE'
+  writing manifest file '/tmp/pip-pip-egg-info-3kylolyr/flash_mla.egg-info/SOURCES.txt'
+  Preparing metadata (setup.py): finished with status 'done'
+Installing collected packages: flash-mla
+  Running setup.py develop for flash-mla
+    Running command python setup.py develop
+    Compiling using NVCC 12.8
+    running develop
+    /usr/lib/python3/dist-packages/setuptools/command/develop.py:40: EasyInstallDeprecationWarning: easy_install command is deprecated.
+    !!
+
+            ********************************************************************************
+            Please avoid running ``setup.py`` and ``easy_install``.
+            Instead, use pypa/build, pypa/installer or other
+            standards-based tools.
+
+            See https://github.com/pypa/setuptools/issues/917 for details.
+            ********************************************************************************
+
+    !!
+      easy_install.initialize_options(self)
+    /usr/lib/python3/dist-packages/setuptools/_distutils/cmd.py:66: SetuptoolsDeprecationWarning: setup.py install is deprecated.
+    !!
+
+            ********************************************************************************
+            Please avoid running ``setup.py`` directly.
+            Instead, use pypa/build, pypa/installer or other
+            standards-based tools.
+
+            See https://blog.ganssle.io/articles/2021/10/setup-py-deprecated.html for details.
+            ********************************************************************************
+
+    !!
+      self.initialize_options()
+    running egg_info
+    writing flash_mla.egg-info/PKG-INFO
+    writing dependency_links to flash_mla.egg-info/dependency_links.txt
+    writing top-level names to flash_mla.egg-info/top_level.txt
+    reading manifest file 'flash_mla.egg-info/SOURCES.txt'
+    adding license file 'LICENSE'
+    writing manifest file 'flash_mla.egg-info/SOURCES.txt'
+    running build_ext
+    building 'flash_mla.cuda' extension
+    Emitting ninja build file /home/ubuntu/g0/FlashMLA/build/temp.linux-x86_64-cpython-312/build.ninja...
+    Compiling objects...
+    Using envvar MAX_JOBS (24) as the number of workers...
+    [1/3] c++ -MMD -MF /home/ubuntu/g0/FlashMLA/build/temp.linux-x86_64-cpython-312/csrc/api/api.o.d -fno-strict-overflow -Wsign-compare -DNDEBUG -g -O2 -Wall -fPIC -I/home/ubuntu/g0/FlashMLA/csrc -I/home/ubuntu/g0/FlashMLA/csrc/kerutils/include -I/home/ubuntu/g0/FlashMLA/csrc/sm90 -I/home/ubuntu/g0/FlashMLA/csrc/cutlass/include -I/home/ubuntu/g0/FlashMLA/csrc/cutlass/tools/util/include -I/usr/lib/python3/dist-packages/torch/include -I/usr/lib/python3/dist-packages/torch/include/torch/csrc/api/include -I/usr/include/python3.12 -c -c /home/ubuntu/g0/FlashMLA/csrc/api/api.cpp -o /home/ubuntu/g0/FlashMLA/build/temp.linux-x86_64-cpython-312/csrc/api/api.o -O3 -std=c++20 -DNDEBUG -Wno-deprecated-declarations -DTORCH_API_INCLUDE_EXTENSION_H '-DPYBIND11_COMPILER_TYPE="_gcc"' '-DPYBIND11_STDLIB="_libstdcpp"' '-DPYBIND11_BUILD_ABI="_cxxabi1018"' -DTORCH_EXTENSION_NAME=cuda -D_GLIBCXX_USE_CXX11_ABI=1
+    [2/3] /usr/bin/nvcc --generate-dependencies-with-compile --dependency-output /home/ubuntu/g0/FlashMLA/build/temp.linux-x86_64-cpython-312/csrc/sm100/prefill/dense/fmha_cutlass_fwd_sm100.o.d -I/home/ubuntu/g0/FlashMLA/csrc -I/home/ubuntu/g0/FlashMLA/csrc/kerutils/include -I/home/ubuntu/g0/FlashMLA/csrc/sm90 -I/home/ubuntu/g0/FlashMLA/csrc/cutlass/include -I/home/ubuntu/g0/FlashMLA/csrc/cutlass/tools/util/include -I/usr/lib/python3/dist-packages/torch/include -I/usr/lib/python3/dist-packages/torch/include/torch/csrc/api/include -I/usr/include/python3.12 -c -c /home/ubuntu/g0/FlashMLA/csrc/sm100/prefill/dense/fmha_cutlass_fwd_sm100.cu -o /home/ubuntu/g0/FlashMLA/build/temp.linux-x86_64-cpython-312/csrc/sm100/prefill/dense/fmha_cutlass_fwd_sm100.o -D__CUDA_NO_HALF_OPERATORS__ -D__CUDA_NO_HALF_CONVERSIONS__ -D__CUDA_NO_BFLOAT16_CONVERSIONS__ -D__CUDA_NO_HALF2_OPERATORS__ --expt-relaxed-constexpr --compiler-options ''"'"'-fPIC'"'"'' -O3 -std=c++20 -DNDEBUG -D_USE_MATH_DEFINES -Wno-deprecated-declarations -U__CUDA_NO_HALF_OPERATORS__ -U__CUDA_NO_HALF_CONVERSIONS__ -U__CUDA_NO_HALF2_OPERATORS__ -U__CUDA_NO_BFLOAT16_CONVERSIONS__ --expt-relaxed-constexpr --expt-extended-lambda --use_fast_math --ptxas-options=-v,--register-usage-level=10,--warn-on-spills,--warn-on-local-memory-usage,--warn-on-double-precision-use -lineinfo --source-in-ptx -gencode arch=compute_90a,code=sm_90a --threads 32 -DTORCH_API_INCLUDE_EXTENSION_H '-DPYBIND11_COMPILER_TYPE="_gcc"' '-DPYBIND11_STDLIB="_libstdcpp"' '-DPYBIND11_BUILD_ABI="_cxxabi1018"' -DTORCH_EXTENSION_NAME=cuda -D_GLIBCXX_USE_CXX11_ABI=1
+    /usr/lib/python3/dist-packages/torch/include/torch/csrc/api/include/torch/nn/modules/container/any_module_holder.h(92): warning #3189-D: "module" is parsed as an identifier rather than a keyword because the tokens that follow it do not match those of a preprocessor directive
+                module->_forward_populate_default_args(std::move(arguments)));
+                ^
+
+    Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+    /usr/lib/python3/dist-packages/torch/include/torch/csrc/api/include/torch/python.h(92): warning #3189-D: "module" is parsed as an identifier rather than a keyword because the tokens that follow it do not match those of a preprocessor directive
+        module.attr(name) = wrapper_class;
+        ^
+
+    /usr/lib/python3/dist-packages/torch/include/torch/csrc/api/include/torch/python.h(154): warning #3189-D: "module" is parsed as an identifier rather than a keyword because the tokens that follow it do not match those of a preprocessor directive
+                    module.to(
+                    ^
+
+    /usr/lib/python3/dist-packages/torch/include/torch/csrc/api/include/torch/python.h(158): warning #3189-D: "module" is parsed as an identifier rather than a keyword because the tokens that follow it do not match those of a preprocessor directive
+                    module.to(detail::py_object_to_dtype(object), non_blocking);
+                    ^
+
+    /usr/lib/python3/dist-packages/torch/include/torch/csrc/api/include/torch/python.h(169): warning #3189-D: "module" is parsed as an identifier rather than a keyword because the tokens that follow it do not match those of a preprocessor directive
+                      module.to(detail::py_object_to_dtype(dtype), non_blocking);
+                      ^
+
+    /usr/lib/python3/dist-packages/torch/include/torch/csrc/api/include/torch/python.h(171): warning #3189-D: "module" is parsed as an identifier rather than a keyword because the tokens that follow it do not match those of a preprocessor directive
+                      module.to(detail::py_object_to_device(device), non_blocking);
+                      ^
+
+    /usr/lib/python3/dist-packages/torch/include/torch/csrc/api/include/torch/python.h(173): warning #3189-D: "module" is parsed as an identifier rather than a keyword because the tokens that follow it do not match those of a preprocessor directive
+                      module.to(
+                      ^
+
+    /home/ubuntu/g0/FlashMLA/csrc/cutlass/include/cutlass/gemm/collective/sm100_blockscaled_mma_array_warpspecialized_rcggemm.hpp(694): warning #2908-D: the implicit by-copy capture of "this" is deprecated
+              Tensor mSFB_tmp = observed_tma_load_sfb_->get_tma_tensor(shape(layout_SFB));
+                                ^
+
+    /home/ubuntu/g0/FlashMLA/csrc/cutlass/include/cutlass/gemm/collective/sm100_blockscaled_sparse_mma_warpspecialized.hpp(902): warning #2908-D: the implicit by-copy capture of "this" is deprecated
+              Tensor mSFB_tmp = observed_tma_load_sfb_->get_tma_tensor(shape(layout_SFB_));
+                                ^
+
+    /home/ubuntu/g0/FlashMLA/csrc/cutlass/include/cutlass/gemm/collective/sm100_blockscaled_mma_warpspecialized.hpp(717): warning #2908-D: the implicit by-copy capture of "this" is deprecated
+              Tensor mSFB_tmp = observed_tma_load_sfb_->get_tma_tensor(shape(layout_SFB_));
+                                ^
+
+    /home/ubuntu/g0/FlashMLA/csrc/cutlass/include/cutlass/gemm/collective/sm100_blockscaled_mma_array_warpspecialized.hpp(727): warning #2908-D: the implicit by-copy capture of "this" is deprecated
+              Tensor mSFB_tmp = observed_tma_load_sfb_->get_tma_tensor(shape(layout_SFB));
+                                ^
+
+    /home/ubuntu/g0/FlashMLA/csrc/cutlass/include/cutlass/gemm/collective/sm100_blockscaled_mma_mixed_tma_cpasync_warpspecialized.hpp(541): warning #2908-D: the implicit by-copy capture of "this" is deprecated
+              Tensor mSFB_tmp = observed_tma_load_sfb_->get_tma_tensor(shape(layout_SFB_));
+                                ^
+
+    /home/ubuntu/g0/FlashMLA/csrc/cutlass/include/cutlass/gemm/collective/sm103_blockscaled_mma_warpspecialized.hpp(682): warning #2908-D: the implicit by-copy capture of "this" is deprecated
+              Tensor mSFB_tmp = observed_tma_load_sfb_->get_tma_tensor(shape(params.layout_SFB));
+                                ^
+
+    /home/ubuntu/g0/FlashMLA/csrc/cutlass/include/cutlass/gemm/collective/sm103_blockscaled_mma_array_warpspecialized.hpp(810): warning #2908-D: the implicit by-copy capture of "this" is deprecated
+              Tensor mSFB_tmp = observed_tma_load_sfb_->get_tma_tensor(shape(layout_SFB));
+                                ^
+
+    /usr/lib/python3/dist-packages/torch/include/torch/csrc/api/include/torch/nn/modules/container/any_module_holder.h(92): warning #3189-D: "module" is parsed as an identifier rather than a keyword because the tokens that follow it do not match those of a preprocessor directive
+                module->_forward_populate_default_args(std::move(arguments)));
+                ^
+
+    Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+    /usr/lib/python3/dist-packages/torch/include/torch/csrc/api/include/torch/python.h(92): warning #3189-D: "module" is parsed as an identifier rather than a keyword because the tokens that follow it do not match those of a preprocessor directive
+        module.attr(name) = wrapper_class;
+        ^
+
+    /usr/lib/python3/dist-packages/torch/include/torch/csrc/api/include/torch/python.h(154): warning #3189-D: "module" is parsed as an identifier rather than a keyword because the tokens that follow it do not match those of a preprocessor directive
+                    module.to(
+                    ^
+
+    /usr/lib/python3/dist-packages/torch/include/torch/csrc/api/include/torch/python.h(158): warning #3189-D: "module" is parsed as an identifier rather than a keyword because the tokens that follow it do not match those of a preprocessor directive
+                    module.to(detail::py_object_to_dtype(object), non_blocking);
+                    ^
+
+    /usr/lib/python3/dist-packages/torch/include/torch/csrc/api/include/torch/python.h(169): warning #3189-D: "module" is parsed as an identifier rather than a keyword because the tokens that follow it do not match those of a preprocessor directive
+                      module.to(detail::py_object_to_dtype(dtype), non_blocking);
+                      ^
+
+    /usr/lib/python3/dist-packages/torch/include/torch/csrc/api/include/torch/python.h(171): warning #3189-D: "module" is parsed as an identifier rather than a keyword because the tokens that follow it do not match those of a preprocessor directive
+                      module.to(detail::py_object_to_device(device), non_blocking);
+                      ^
+
+    /usr/lib/python3/dist-packages/torch/include/torch/csrc/api/include/torch/python.h(173): warning #3189-D: "module" is parsed as an identifier rather than a keyword because the tokens that follow it do not match those of a preprocessor directive
+                      module.to(
+                      ^
+
+    ptxas info    : 46 bytes gmem
+    ptxas info    : Compiling entry function '_ZN7cutlass13device_kernelINS_4fmha6kernel36Sm100FmhaFwdKernelTmaWarpspecializedIN4cute5tupleIJiiiNS5_IJNS5_IJiiEEEiEEEEEENS1_10collective38Sm100FmhaFwdMainloopTmaWarpspecializedINS_10bfloat16_tEffNS5_IJNS4_1CILi256EEENSC_ILi128EEESE_EEENS5_IJiNSC_ILi1EEES7_EEENS5_IJiSG_NS5_IJNS5_IJNSC_ILi0EEEiEEEiEEEEEESL_NS9_12ResidualMaskENS5_IJNSC_ILi2EEESG_SG_EEENSC_ILb0EEEEENS9_38Sm100FmhaFwdEpilogueTmaWarpspecializedISB_fNS5_IJSE_SE_SE_EEESH_NS5_IJSG_S7_EEESP_EENS2_23PersistentTileSchedulerENS2_41Sm100FmhaCtxKernelWarpspecializedScheduleEEEEEvNT_6ParamsE' for 'sm_90a'
+    ptxas info    : Function properties for _ZN7cutlass13device_kernelINS_4fmha6kernel36Sm100FmhaFwdKernelTmaWarpspecializedIN4cute5tupleIJiiiNS5_IJNS5_IJiiEEEiEEEEEENS1_10collective38Sm100FmhaFwdMainloopTmaWarpspecializedINS_10bfloat16_tEffNS5_IJNS4_1CILi256EEENSC_ILi128EEESE_EEENS5_IJiNSC_ILi1EEES7_EEENS5_IJiSG_NS5_IJNS5_IJNSC_ILi0EEEiEEEiEEEEEESL_NS9_12ResidualMaskENS5_IJNSC_ILi2EEESG_SG_EEENSC_ILb0EEEEENS9_38Sm100FmhaFwdEpilogueTmaWarpspecializedISB_fNS5_IJSE_SE_SE_EEESH_NS5_IJSG_S7_EEESP_EENS2_23PersistentTileSchedulerENS2_41Sm100FmhaCtxKernelWarpspecializedScheduleEEEEEvNT_6ParamsE
+        0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+    ptxas info    : Used 24 registers, used 0 barriers
+    ptxas info    : Compile time = 2.514 ms
+    ptxas info    : Compiling entry function '_ZN7cutlass13device_kernelINS_4fmha6kernel36Sm100FmhaFwdKernelTmaWarpspecializedIN4cute5tupleIJiiNS5_IJiiEEENS5_IJS6_iEEEEEENS1_10collective37Sm100MlaFwdMainloopTmaWarpspecializedINS_10bfloat16_tEffNS5_IJNS4_1CILi256EEENSC_ILi128EEENS5_IJSE_NSC_ILi64EEEEEEEEENS5_IJiNSC_ILi1EEES7_EEENS5_IJiSI_NS5_IJNS5_IJNSC_ILi0EEEiEEEiEEEEEESN_NS9_12ResidualMaskENS5_IJNSC_ILi2EEESI_SI_EEENSC_ILb1EEEEENS9_38Sm100FmhaFwdEpilogueTmaWarpspecializedISB_fNS5_IJSE_SE_SE_EEESJ_NS5_IJSI_S7_EEESR_EENS2_23PersistentTileSchedulerENS2_43Sm100MlaFwdCtxKernelWarpspecializedScheduleEEEEEvNT_6ParamsE' for 'sm_90a'
+    ptxas info    : Function properties for _ZN7cutlass13device_kernelINS_4fmha6kernel36Sm100FmhaFwdKernelTmaWarpspecializedIN4cute5tupleIJiiNS5_IJiiEEENS5_IJS6_iEEEEEENS1_10collective37Sm100MlaFwdMainloopTmaWarpspecializedINS_10bfloat16_tEffNS5_IJNS4_1CILi256EEENSC_ILi128EEENS5_IJSE_NSC_ILi64EEEEEEEEENS5_IJiNSC_ILi1EEES7_EEENS5_IJiSI_NS5_IJNS5_IJNSC_ILi0EEEiEEEiEEEEEESN_NS9_12ResidualMaskENS5_IJNSC_ILi2EEESI_SI_EEENSC_ILb1EEEEENS9_38Sm100FmhaFwdEpilogueTmaWarpspecializedISB_fNS5_IJSE_SE_SE_EEESJ_NS5_IJSI_S7_EEESR_EENS2_23PersistentTileSchedulerENS2_43Sm100MlaFwdCtxKernelWarpspecializedScheduleEEEEEvNT_6ParamsE
+        0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+    ptxas info    : Used 24 registers, used 0 barriers
+    ptxas info    : Compile time = 1.664 ms
+    ptxas info    : Compiling entry function '_ZN7cutlass13device_kernelINS_4fmha6kernel36Sm100FmhaFwdKernelTmaWarpspecializedIN4cute5tupleIJNS1_10collective14VariableLengthES7_iNS5_IJNS5_IJiiEEEiEEEEEENS6_38Sm100FmhaFwdMainloopTmaWarpspecializedINS_10bfloat16_tEffNS5_IJNS4_1CILi256EEENSD_ILi128EEESF_EEENS5_IJiNSD_ILi1EEES9_EEENS5_IJiSH_NS5_IJNS5_IJNSD_ILi0EEEiEEEiEEEEEESM_NS6_12ResidualMaskENS5_IJNSD_ILi2EEESH_SH_EEENSD_ILb0EEEEENS6_38Sm100FmhaFwdEpilogueTmaWarpspecializedISC_fNS5_IJSF_SF_SF_EEESI_NS5_IJSH_S9_EEESQ_EENS2_23IndividualTileSchedulerENS2_41Sm100FmhaCtxKernelWarpspecializedScheduleEEEEEvNT_6ParamsE' for 'sm_90a'
+    ptxas info    : Function properties for _ZN7cutlass13device_kernelINS_4fmha6kernel36Sm100FmhaFwdKernelTmaWarpspecializedIN4cute5tupleIJNS1_10collective14VariableLengthES7_iNS5_IJNS5_IJiiEEEiEEEEEENS6_38Sm100FmhaFwdMainloopTmaWarpspecializedINS_10bfloat16_tEffNS5_IJNS4_1CILi256EEENSD_ILi128EEESF_EEENS5_IJiNSD_ILi1EEES9_EEENS5_IJiSH_NS5_IJNS5_IJNSD_ILi0EEEiEEEiEEEEEESM_NS6_12ResidualMaskENS5_IJNSD_ILi2EEESH_SH_EEENSD_ILb0EEEEENS6_38Sm100FmhaFwdEpilogueTmaWarpspecializedISC_fNS5_IJSF_SF_SF_EEESI_NS5_IJSH_S9_EEESQ_EENS2_23IndividualTileSchedulerENS2_41Sm100FmhaCtxKernelWarpspecializedScheduleEEEEEvNT_6ParamsE
+        0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+    ptxas info    : Used 24 registers, used 0 barriers
+    ptxas info    : Compile time = 1.608 ms
+    ptxas info    : Compiling entry function '_ZN7cutlass13device_kernelINS_4fmha6kernel36Sm100FmhaFwdKernelTmaWarpspecializedIN4cute5tupleIJNS1_10collective14VariableLengthES7_iNS5_IJNS5_IJiiEEEiEEEEEENS6_38Sm100FmhaFwdMainloopTmaWarpspecializedINS_10bfloat16_tEffNS5_IJNS4_1CILi256EEENSD_ILi128EEESF_EEENS5_IJiNSD_ILi1EEES9_EEENS5_IJiSH_NS5_IJNS5_IJNSD_ILi0EEEiEEEiEEEEEESM_NS6_12ResidualMaskENS5_IJNSD_ILi2EEESH_SH_EEENSD_ILb0EEEEENS6_38Sm100FmhaFwdEpilogueTmaWarpspecializedISC_fNS5_IJSF_SF_SF_EEESI_NS5_IJSH_S9_EEESQ_EENS2_29CausalIndividualTileSchedulerENS2_41Sm100FmhaCtxKernelWarpspecializedScheduleEEEEEvNT_6ParamsE' for 'sm_90a'
+    ptxas info    : Function properties for _ZN7cutlass13device_kernelINS_4fmha6kernel36Sm100FmhaFwdKernelTmaWarpspecializedIN4cute5tupleIJNS1_10collective14VariableLengthES7_iNS5_IJNS5_IJiiEEEiEEEEEENS6_38Sm100FmhaFwdMainloopTmaWarpspecializedINS_10bfloat16_tEffNS5_IJNS4_1CILi256EEENSD_ILi128EEESF_EEENS5_IJiNSD_ILi1EEES9_EEENS5_IJiSH_NS5_IJNS5_IJNSD_ILi0EEEiEEEiEEEEEESM_NS6_12ResidualMaskENS5_IJNSD_ILi2EEESH_SH_EEENSD_ILb0EEEEENS6_38Sm100FmhaFwdEpilogueTmaWarpspecializedISC_fNS5_IJSF_SF_SF_EEESI_NS5_IJSH_S9_EEESQ_EENS2_29CausalIndividualTileSchedulerENS2_41Sm100FmhaCtxKernelWarpspecializedScheduleEEEEEvNT_6ParamsE
+        0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+    ptxas info    : Used 24 registers, used 0 barriers
+    ptxas info    : Compile time = 1.431 ms
+    ptxas info    : Compiling entry function '_ZN7cutlass13device_kernelINS_4fmha6kernel36Sm100FmhaFwdKernelTmaWarpspecializedIN4cute5tupleIJNS1_10collective14VariableLengthES7_NS5_IJiiEEENS5_IJS8_iEEEEEENS6_37Sm100MlaFwdMainloopTmaWarpspecializedINS_10bfloat16_tEffNS5_IJNS4_1CILi256EEENSD_ILi128EEENS5_IJSF_NSD_ILi64EEEEEEEEENS5_IJiNSD_ILi1EEES9_EEENS5_IJiSJ_NS5_IJNS5_IJNSD_ILi0EEEiEEEiEEEEEESO_NS6_12ResidualMaskENS5_IJNSD_ILi2EEESJ_SJ_EEENSD_ILb0EEEEENS6_38Sm100FmhaFwdEpilogueTmaWarpspecializedISC_fNS5_IJSF_SF_SF_EEESK_NS5_IJSJ_S9_EEESS_EENS2_23IndividualTileSchedulerENS2_43Sm100MlaFwdCtxKernelWarpspecializedScheduleEEEEEvNT_6ParamsE' for 'sm_90a'
+    ptxas info    : Function properties for _ZN7cutlass13device_kernelINS_4fmha6kernel36Sm100FmhaFwdKernelTmaWarpspecializedIN4cute5tupleIJNS1_10collective14VariableLengthES7_NS5_IJiiEEENS5_IJS8_iEEEEEENS6_37Sm100MlaFwdMainloopTmaWarpspecializedINS_10bfloat16_tEffNS5_IJNS4_1CILi256EEENSD_ILi128EEENS5_IJSF_NSD_ILi64EEEEEEEEENS5_IJiNSD_ILi1EEES9_EEENS5_IJiSJ_NS5_IJNS5_IJNSD_ILi0EEEiEEEiEEEEEESO_NS6_12ResidualMaskENS5_IJNSD_ILi2EEESJ_SJ_EEENSD_ILb0EEEEENS6_38Sm100FmhaFwdEpilogueTmaWarpspecializedISC_fNS5_IJSF_SF_SF_EEESK_NS5_IJSJ_S9_EEESS_EENS2_23IndividualTileSchedulerENS2_43Sm100MlaFwdCtxKernelWarpspecializedScheduleEEEEEvNT_6ParamsE
+        0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+    ptxas info    : Used 24 registers, used 0 barriers
+    ptxas info    : Compile time = 1.412 ms
+    ptxas info    : Compiling entry function '_ZN7cutlass13device_kernelINS_4fmha6kernel36Sm100FmhaFwdKernelTmaWarpspecializedIN4cute5tupleIJNS1_10collective14VariableLengthES7_NS5_IJiiEEENS5_IJS8_iEEEEEENS6_37Sm100MlaFwdMainloopTmaWarpspecializedINS_10bfloat16_tEffNS5_IJNS4_1CILi256EEENSD_ILi128EEENS5_IJSF_NSD_ILi64EEEEEEEEENS5_IJiNSD_ILi1EEES9_EEENS5_IJiSJ_NS5_IJNS5_IJNSD_ILi0EEEiEEEiEEEEEESO_NS6_12ResidualMaskENS5_IJNSD_ILi2EEESJ_SJ_EEENSD_ILb0EEEEENS6_38Sm100FmhaFwdEpilogueTmaWarpspecializedISC_fNS5_IJSF_SF_SF_EEESK_NS5_IJSJ_S9_EEESS_EENS2_29CausalIndividualTileSchedulerENS2_43Sm100MlaFwdCtxKernelWarpspecializedScheduleEEEEEvNT_6ParamsE' for 'sm_90a'
+    ptxas info    : Function properties for _ZN7cutlass13device_kernelINS_4fmha6kernel36Sm100FmhaFwdKernelTmaWarpspecializedIN4cute5tupleIJNS1_10collective14VariableLengthES7_NS5_IJiiEEENS5_IJS8_iEEEEEENS6_37Sm100MlaFwdMainloopTmaWarpspecializedINS_10bfloat16_tEffNS5_IJNS4_1CILi256EEENSD_ILi128EEENS5_IJSF_NSD_ILi64EEEEEEEEENS5_IJiNSD_ILi1EEES9_EEENS5_IJiSJ_NS5_IJNS5_IJNSD_ILi0EEEiEEEiEEEEEESO_NS6_12ResidualMaskENS5_IJNSD_ILi2EEESJ_SJ_EEENSD_ILb0EEEEENS6_38Sm100FmhaFwdEpilogueTmaWarpspecializedISC_fNS5_IJSF_SF_SF_EEESK_NS5_IJSJ_S9_EEESS_EENS2_29CausalIndividualTileSchedulerENS2_43Sm100MlaFwdCtxKernelWarpspecializedScheduleEEEEEvNT_6ParamsE
+        0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+    ptxas info    : Used 24 registers, used 0 barriers
+    ptxas info    : Compile time = 1.400 ms
+    ptxas info    : Compiling entry function '_ZN7cutlass13device_kernelINS_4fmha6kernel36Sm100FmhaFwdKernelTmaWarpspecializedIN4cute5tupleIJiiiNS5_IJNS5_IJiiEEEiEEEEEENS1_10collective38Sm100FmhaFwdMainloopTmaWarpspecializedINS_10bfloat16_tEffNS5_IJNS4_1CILi256EEENSC_ILi128EEESE_EEENS5_IJiNSC_ILi1EEES7_EEENS5_IJiSG_NS5_IJNS5_IJNSC_ILi0EEEiEEEiEEEEEESL_NS9_10CausalMaskILb0EEENS5_IJNSC_ILi2EEESG_SG_EEENSC_ILb0EEEEENS9_38Sm100FmhaFwdEpilogueTmaWarpspecializedISB_fNS5_IJSE_SE_SE_EEESH_NS5_IJSG_S7_EEESQ_EENS2_23IndividualTileSchedulerENS2_41Sm100FmhaCtxKernelWarpspecializedScheduleEEEEEvNT_6ParamsE' for 'sm_90a'
+    ptxas info    : Function properties for _ZN7cutlass13device_kernelINS_4fmha6kernel36Sm100FmhaFwdKernelTmaWarpspecializedIN4cute5tupleIJiiiNS5_IJNS5_IJiiEEEiEEEEEENS1_10collective38Sm100FmhaFwdMainloopTmaWarpspecializedINS_10bfloat16_tEffNS5_IJNS4_1CILi256EEENSC_ILi128EEESE_EEENS5_IJiNSC_ILi1EEES7_EEENS5_IJiSG_NS5_IJNS5_IJNSC_ILi0EEEiEEEiEEEEEESL_NS9_10CausalMaskILb0EEENS5_IJNSC_ILi2EEESG_SG_EEENSC_ILb0EEEEENS9_38Sm100FmhaFwdEpilogueTmaWarpspecializedISB_fNS5_IJSE_SE_SE_EEESH_NS5_IJSG_S7_EEESQ_EENS2_23IndividualTileSchedulerENS2_41Sm100FmhaCtxKernelWarpspecializedScheduleEEEEEvNT_6ParamsE
+        0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+    ptxas info    : Used 24 registers, used 0 barriers
+    ptxas info    : Compile time = 1.426 ms
+    ptxas info    : Compiling entry function '_ZN7cutlass13device_kernelINS_4fmha6kernel36Sm100FmhaFwdKernelTmaWarpspecializedIN4cute5tupleIJiiiNS5_IJNS5_IJiiEEEiEEEEEENS1_10collective38Sm100FmhaFwdMainloopTmaWarpspecializedINS_10bfloat16_tEffNS5_IJNS4_1CILi256EEENSC_ILi128EEESE_EEENS5_IJiNSC_ILi1EEES7_EEENS5_IJiSG_NS5_IJNS5_IJNSC_ILi0EEEiEEEiEEEEEESL_NS9_10CausalMaskILb0EEENS5_IJNSC_ILi2EEESG_SG_EEENSC_ILb0EEEEENS9_38Sm100FmhaFwdEpilogueTmaWarpspecializedISB_fNS5_IJSE_SE_SE_EEESH_NS5_IJSG_S7_EEESQ_EENS2_29CausalIndividualTileSchedulerENS2_41Sm100FmhaCtxKernelWarpspecializedScheduleEEEEEvNT_6ParamsE' for 'sm_90a'
+    ptxas info    : Function properties for _ZN7cutlass13device_kernelINS_4fmha6kernel36Sm100FmhaFwdKernelTmaWarpspecializedIN4cute5tupleIJiiiNS5_IJNS5_IJiiEEEiEEEEEENS1_10collective38Sm100FmhaFwdMainloopTmaWarpspecializedINS_10bfloat16_tEffNS5_IJNS4_1CILi256EEENSC_ILi128EEESE_EEENS5_IJiNSC_ILi1EEES7_EEENS5_IJiSG_NS5_IJNS5_IJNSC_ILi0EEEiEEEiEEEEEESL_NS9_10CausalMaskILb0EEENS5_IJNSC_ILi2EEESG_SG_EEENSC_ILb0EEEEENS9_38Sm100FmhaFwdEpilogueTmaWarpspecializedISB_fNS5_IJSE_SE_SE_EEESH_NS5_IJSG_S7_EEESQ_EENS2_29CausalIndividualTileSchedulerENS2_41Sm100FmhaCtxKernelWarpspecializedScheduleEEEEEvNT_6ParamsE
+        0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+    ptxas info    : Used 24 registers, used 0 barriers
+    ptxas info    : Compile time = 1.417 ms
+    ptxas info    : Compiling entry function '_ZN7cutlass13device_kernelINS_4fmha6kernel36Sm100FmhaFwdKernelTmaWarpspecializedIN4cute5tupleIJiiNS5_IJiiEEENS5_IJS6_iEEEEEENS1_10collective37Sm100MlaFwdMainloopTmaWarpspecializedINS_10bfloat16_tEffNS5_IJNS4_1CILi256EEENSC_ILi128EEENS5_IJSE_NSC_ILi64EEEEEEEEENS5_IJiNSC_ILi1EEES7_EEENS5_IJiSI_NS5_IJNS5_IJNSC_ILi0EEEiEEEiEEEEEESN_NS9_10CausalMaskILb0EEENS5_IJNSC_ILi2EEESI_SI_EEENSC_ILb0EEEEENS9_38Sm100FmhaFwdEpilogueTmaWarpspecializedISB_fNS5_IJSE_SE_SE_EEESJ_NS5_IJSI_S7_EEESS_EENS2_23IndividualTileSchedulerENS2_43Sm100MlaFwdCtxKernelWarpspecializedScheduleEEEEEvNT_6ParamsE' for 'sm_90a'
+    ptxas info    : Function properties for _ZN7cutlass13device_kernelINS_4fmha6kernel36Sm100FmhaFwdKernelTmaWarpspecializedIN4cute5tupleIJiiNS5_IJiiEEENS5_IJS6_iEEEEEENS1_10collective37Sm100MlaFwdMainloopTmaWarpspecializedINS_10bfloat16_tEffNS5_IJNS4_1CILi256EEENSC_ILi128EEENS5_IJSE_NSC_ILi64EEEEEEEEENS5_IJiNSC_ILi1EEES7_EEENS5_IJiSI_NS5_IJNS5_IJNSC_ILi0EEEiEEEiEEEEEESN_NS9_10CausalMaskILb0EEENS5_IJNSC_ILi2EEESI_SI_EEENSC_ILb0EEEEENS9_38Sm100FmhaFwdEpilogueTmaWarpspecializedISB_fNS5_IJSE_SE_SE_EEESJ_NS5_IJSI_S7_EEESS_EENS2_23IndividualTileSchedulerENS2_43Sm100MlaFwdCtxKernelWarpspecializedScheduleEEEEEvNT_6ParamsE
+        0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+    ptxas info    : Used 24 registers, used 0 barriers
+    ptxas info    : Compile time = 1.411 ms
+    ptxas info    : Compiling entry function '_ZN7cutlass13device_kernelINS_4fmha6kernel36Sm100FmhaFwdKernelTmaWarpspecializedIN4cute5tupleIJiiNS5_IJiiEEENS5_IJS6_iEEEEEENS1_10collective37Sm100MlaFwdMainloopTmaWarpspecializedINS_10bfloat16_tEffNS5_IJNS4_1CILi256EEENSC_ILi128EEENS5_IJSE_NSC_ILi64EEEEEEEEENS5_IJiNSC_ILi1EEES7_EEENS5_IJiSI_NS5_IJNS5_IJNSC_ILi0EEEiEEEiEEEEEESN_NS9_10CausalMaskILb0EEENS5_IJNSC_ILi2EEESI_SI_EEENSC_ILb0EEEEENS9_38Sm100FmhaFwdEpilogueTmaWarpspecializedISB_fNS5_IJSE_SE_SE_EEESJ_NS5_IJSI_S7_EEESS_EENS2_29CausalIndividualTileSchedulerENS2_43Sm100MlaFwdCtxKernelWarpspecializedScheduleEEEEEvNT_6ParamsE' for 'sm_90a'
+    ptxas info    : Function properties for _ZN7cutlass13device_kernelINS_4fmha6kernel36Sm100FmhaFwdKernelTmaWarpspecializedIN4cute5tupleIJiiNS5_IJiiEEENS5_IJS6_iEEEEEENS1_10collective37Sm100MlaFwdMainloopTmaWarpspecializedINS_10bfloat16_tEffNS5_IJNS4_1CILi256EEENSC_ILi128EEENS5_IJSE_NSC_ILi64EEEEEEEEENS5_IJiNSC_ILi1EEES7_EEENS5_IJiSI_NS5_IJNS5_IJNSC_ILi0EEEiEEEiEEEEEESN_NS9_10CausalMaskILb0EEENS5_IJNSC_ILi2EEESI_SI_EEENSC_ILb0EEEEENS9_38Sm100FmhaFwdEpilogueTmaWarpspecializedISB_fNS5_IJSE_SE_SE_EEESJ_NS5_IJSI_S7_EEESS_EENS2_29CausalIndividualTileSchedulerENS2_43Sm100MlaFwdCtxKernelWarpspecializedScheduleEEEEEvNT_6ParamsE
+        0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+    ptxas info    : Used 24 registers, used 0 barriers
+    ptxas info    : Compile time = 1.419 ms
+    ptxas info    : Compiling entry function '_ZN7cutlass13device_kernelINS_4fmha6kernel36Sm100FmhaFwdKernelTmaWarpspecializedIN4cute5tupleIJNS1_10collective14VariableLengthES7_iNS5_IJNS5_IJiiEEEiEEEEEENS6_38Sm100FmhaFwdMainloopTmaWarpspecializedINS_10bfloat16_tEffNS5_IJNS4_1CILi256EEENSD_ILi128EEESF_EEENS5_IJiNSD_ILi1EEES9_EEENS5_IJiSH_NS5_IJNS5_IJNSD_ILi0EEEiEEEiEEEEEESM_NS6_10CausalMaskILb0EEENS5_IJNSD_ILi2EEESH_SH_EEENSD_ILb0EEEEENS6_38Sm100FmhaFwdEpilogueTmaWarpspecializedISC_fNS5_IJSF_SF_SF_EEESI_NS5_IJSH_S9_EEESR_EENS2_23IndividualTileSchedulerENS2_41Sm100FmhaCtxKernelWarpspecializedScheduleEEEEEvNT_6ParamsE' for 'sm_90a'
+    ptxas info    : Function properties for _ZN7cutlass13device_kernelINS_4fmha6kernel36Sm100FmhaFwdKernelTmaWarpspecializedIN4cute5tupleIJNS1_10collective14VariableLengthES7_iNS5_IJNS5_IJiiEEEiEEEEEENS6_38Sm100FmhaFwdMainloopTmaWarpspecializedINS_10bfloat16_tEffNS5_IJNS4_1CILi256EEENSD_ILi128EEESF_EEENS5_IJiNSD_ILi1EEES9_EEENS5_IJiSH_NS5_IJNS5_IJNSD_ILi0EEEiEEEiEEEEEESM_NS6_10CausalMaskILb0EEENS5_IJNSD_ILi2EEESH_SH_EEENSD_ILb0EEEEENS6_38Sm100FmhaFwdEpilogueTmaWarpspecializedISC_fNS5_IJSF_SF_SF_EEESI_NS5_IJSH_S9_EEESR_EENS2_23IndividualTileSchedulerENS2_41Sm100FmhaCtxKernelWarpspecializedScheduleEEEEEvNT_6ParamsE
+        0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+    ptxas info    : Used 24 registers, used 0 barriers
+    ptxas info    : Compile time = 1.422 ms
+    ptxas info    : Compiling entry function '_ZN7cutlass13device_kernelINS_4fmha6kernel36Sm100FmhaFwdKernelTmaWarpspecializedIN4cute5tupleIJNS1_10collective14VariableLengthES7_iNS5_IJNS5_IJiiEEEiEEEEEENS6_38Sm100FmhaFwdMainloopTmaWarpspecializedINS_10bfloat16_tEffNS5_IJNS4_1CILi256EEENSD_ILi128EEESF_EEENS5_IJiNSD_ILi1EEES9_EEENS5_IJiSH_NS5_IJNS5_IJNSD_ILi0EEEiEEEiEEEEEESM_NS6_10CausalMaskILb0EEENS5_IJNSD_ILi2EEESH_SH_EEENSD_ILb0EEEEENS6_38Sm100FmhaFwdEpilogueTmaWarpspecializedISC_fNS5_IJSF_SF_SF_EEESI_NS5_IJSH_S9_EEESR_EENS2_29CausalIndividualTileSchedulerENS2_41Sm100FmhaCtxKernelWarpspecializedScheduleEEEEEvNT_6ParamsE' for 'sm_90a'
+    ptxas info    : Function properties for _ZN7cutlass13device_kernelINS_4fmha6kernel36Sm100FmhaFwdKernelTmaWarpspecializedIN4cute5tupleIJNS1_10collective14VariableLengthES7_iNS5_IJNS5_IJiiEEEiEEEEEENS6_38Sm100FmhaFwdMainloopTmaWarpspecializedINS_10bfloat16_tEffNS5_IJNS4_1CILi256EEENSD_ILi128EEESF_EEENS5_IJiNSD_ILi1EEES9_EEENS5_IJiSH_NS5_IJNS5_IJNSD_ILi0EEEiEEEiEEEEEESM_NS6_10CausalMaskILb0EEENS5_IJNSD_ILi2EEESH_SH_EEENSD_ILb0EEEEENS6_38Sm100FmhaFwdEpilogueTmaWarpspecializedISC_fNS5_IJSF_SF_SF_EEESI_NS5_IJSH_S9_EEESR_EENS2_29CausalIndividualTileSchedulerENS2_41Sm100FmhaCtxKernelWarpspecializedScheduleEEEEEvNT_6ParamsE
+        0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+    ptxas info    : Used 24 registers, used 0 barriers
+    ptxas info    : Compile time = 1.418 ms
+    ptxas info    : Compiling entry function '_ZN7cutlass13device_kernelINS_4fmha6kernel36Sm100FmhaFwdKernelTmaWarpspecializedIN4cute5tupleIJNS1_10collective14VariableLengthES7_NS5_IJiiEEENS5_IJS8_iEEEEEENS6_37Sm100MlaFwdMainloopTmaWarpspecializedINS_10bfloat16_tEffNS5_IJNS4_1CILi256EEENSD_ILi128EEENS5_IJSF_NSD_ILi64EEEEEEEEENS5_IJiNSD_ILi1EEES9_EEENS5_IJiSJ_NS5_IJNS5_IJNSD_ILi0EEEiEEEiEEEEEESO_NS6_10CausalMaskILb0EEENS5_IJNSD_ILi2EEESJ_SJ_EEENSD_ILb0EEEEENS6_38Sm100FmhaFwdEpilogueTmaWarpspecializedISC_fNS5_IJSF_SF_SF_EEESK_NS5_IJSJ_S9_EEEST_EENS2_23IndividualTileSchedulerENS2_43Sm100MlaFwdCtxKernelWarpspecializedScheduleEEEEEvNT_6ParamsE' for 'sm_90a'
+    ptxas info    : Function properties for _ZN7cutlass13device_kernelINS_4fmha6kernel36Sm100FmhaFwdKernelTmaWarpspecializedIN4cute5tupleIJNS1_10collective14VariableLengthES7_NS5_IJiiEEENS5_IJS8_iEEEEEENS6_37Sm100MlaFwdMainloopTmaWarpspecializedINS_10bfloat16_tEffNS5_IJNS4_1CILi256EEENSD_ILi128EEENS5_IJSF_NSD_ILi64EEEEEEEEENS5_IJiNSD_ILi1EEES9_EEENS5_IJiSJ_NS5_IJNS5_IJNSD_ILi0EEEiEEEiEEEEEESO_NS6_10CausalMaskILb0EEENS5_IJNSD_ILi2EEESJ_SJ_EEENSD_ILb0EEEEENS6_38Sm100FmhaFwdEpilogueTmaWarpspecializedISC_fNS5_IJSF_SF_SF_EEESK_NS5_IJSJ_S9_EEEST_EENS2_23IndividualTileSchedulerENS2_43Sm100MlaFwdCtxKernelWarpspecializedScheduleEEEEEvNT_6ParamsE
+        0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+    ptxas info    : Used 24 registers, used 0 barriers
+    ptxas info    : Compile time = 1.441 ms
+    ptxas info    : Compiling entry function '_ZN7cutlass13device_kernelINS_4fmha6kernel36Sm100FmhaFwdKernelTmaWarpspecializedIN4cute5tupleIJNS1_10collective14VariableLengthES7_NS5_IJiiEEENS5_IJS8_iEEEEEENS6_37Sm100MlaFwdMainloopTmaWarpspecializedINS_10bfloat16_tEffNS5_IJNS4_1CILi256EEENSD_ILi128EEENS5_IJSF_NSD_ILi64EEEEEEEEENS5_IJiNSD_ILi1EEES9_EEENS5_IJiSJ_NS5_IJNS5_IJNSD_ILi0EEEiEEEiEEEEEESO_NS6_10CausalMaskILb0EEENS5_IJNSD_ILi2EEESJ_SJ_EEENSD_ILb0EEEEENS6_38Sm100FmhaFwdEpilogueTmaWarpspecializedISC_fNS5_IJSF_SF_SF_EEESK_NS5_IJSJ_S9_EEEST_EENS2_29CausalIndividualTileSchedulerENS2_43Sm100MlaFwdCtxKernelWarpspecializedScheduleEEEEEvNT_6ParamsE' for 'sm_90a'
+    ptxas info    : Function properties for _ZN7cutlass13device_kernelINS_4fmha6kernel36Sm100FmhaFwdKernelTmaWarpspecializedIN4cute5tupleIJNS1_10collective14VariableLengthES7_NS5_IJiiEEENS5_IJS8_iEEEEEENS6_37Sm100MlaFwdMainloopTmaWarpspecializedINS_10bfloat16_tEffNS5_IJNS4_1CILi256EEENSD_ILi128EEENS5_IJSF_NSD_ILi64EEEEEEEEENS5_IJiNSD_ILi1EEES9_EEENS5_IJiSJ_NS5_IJNS5_IJNSD_ILi0EEEiEEEiEEEEEESO_NS6_10CausalMaskILb0EEENS5_IJNSD_ILi2EEESJ_SJ_EEENSD_ILb0EEEEENS6_38Sm100FmhaFwdEpilogueTmaWarpspecializedISC_fNS5_IJSF_SF_SF_EEESK_NS5_IJSJ_S9_EEEST_EENS2_29CausalIndividualTileSchedulerENS2_43Sm100MlaFwdCtxKernelWarpspecializedScheduleEEEEEvNT_6ParamsE
+        0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+    ptxas info    : Used 24 registers, used 0 barriers
+    ptxas info    : Compile time = 1.409 ms
+    [3/3] /usr/bin/nvcc --generate-dependencies-with-compile --dependency-output /home/ubuntu/g0/FlashMLA/build/temp.linux-x86_64-cpython-312/csrc/sm100/prefill/dense/fmha_cutlass_bwd_sm100.o.d -I/home/ubuntu/g0/FlashMLA/csrc -I/home/ubuntu/g0/FlashMLA/csrc/kerutils/include -I/home/ubuntu/g0/FlashMLA/csrc/sm90 -I/home/ubuntu/g0/FlashMLA/csrc/cutlass/include -I/home/ubuntu/g0/FlashMLA/csrc/cutlass/tools/util/include -I/usr/lib/python3/dist-packages/torch/include -I/usr/lib/python3/dist-packages/torch/include/torch/csrc/api/include -I/usr/include/python3.12 -c -c /home/ubuntu/g0/FlashMLA/csrc/sm100/prefill/dense/fmha_cutlass_bwd_sm100.cu -o /home/ubuntu/g0/FlashMLA/build/temp.linux-x86_64-cpython-312/csrc/sm100/prefill/dense/fmha_cutlass_bwd_sm100.o -D__CUDA_NO_HALF_OPERATORS__ -D__CUDA_NO_HALF_CONVERSIONS__ -D__CUDA_NO_BFLOAT16_CONVERSIONS__ -D__CUDA_NO_HALF2_OPERATORS__ --expt-relaxed-constexpr --compiler-options ''"'"'-fPIC'"'"'' -O3 -std=c++20 -DNDEBUG -D_USE_MATH_DEFINES -Wno-deprecated-declarations -U__CUDA_NO_HALF_OPERATORS__ -U__CUDA_NO_HALF_CONVERSIONS__ -U__CUDA_NO_HALF2_OPERATORS__ -U__CUDA_NO_BFLOAT16_CONVERSIONS__ --expt-relaxed-constexpr --expt-extended-lambda --use_fast_math --ptxas-options=-v,--register-usage-level=10,--warn-on-spills,--warn-on-local-memory-usage,--warn-on-double-precision-use -lineinfo --source-in-ptx -gencode arch=compute_90a,code=sm_90a --threads 32 -DTORCH_API_INCLUDE_EXTENSION_H '-DPYBIND11_COMPILER_TYPE="_gcc"' '-DPYBIND11_STDLIB="_libstdcpp"' '-DPYBIND11_BUILD_ABI="_cxxabi1018"' -DTORCH_EXTENSION_NAME=cuda -D_GLIBCXX_USE_CXX11_ABI=1
+    /usr/lib/python3/dist-packages/torch/include/torch/csrc/api/include/torch/nn/modules/container/any_module_holder.h(92): warning #3189-D: "module" is parsed as an identifier rather than a keyword because the tokens that follow it do not match those of a preprocessor directive
+                module->_forward_populate_default_args(std::move(arguments)));
+                ^
+
+    Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+    /usr/lib/python3/dist-packages/torch/include/torch/csrc/api/include/torch/python.h(92): warning #3189-D: "module" is parsed as an identifier rather than a keyword because the tokens that follow it do not match those of a preprocessor directive
+        module.attr(name) = wrapper_class;
+        ^
+
+    /usr/lib/python3/dist-packages/torch/include/torch/csrc/api/include/torch/python.h(154): warning #3189-D: "module" is parsed as an identifier rather than a keyword because the tokens that follow it do not match those of a preprocessor directive
+                    module.to(
+                    ^
+
+    /usr/lib/python3/dist-packages/torch/include/torch/csrc/api/include/torch/python.h(158): warning #3189-D: "module" is parsed as an identifier rather than a keyword because the tokens that follow it do not match those of a preprocessor directive
+                    module.to(detail::py_object_to_dtype(object), non_blocking);
+                    ^
+
+    /usr/lib/python3/dist-packages/torch/include/torch/csrc/api/include/torch/python.h(169): warning #3189-D: "module" is parsed as an identifier rather than a keyword because the tokens that follow it do not match those of a preprocessor directive
+                      module.to(detail::py_object_to_dtype(dtype), non_blocking);
+                      ^
+
+    /usr/lib/python3/dist-packages/torch/include/torch/csrc/api/include/torch/python.h(171): warning #3189-D: "module" is parsed as an identifier rather than a keyword because the tokens that follow it do not match those of a preprocessor directive
+                      module.to(detail::py_object_to_device(device), non_blocking);
+                      ^
+
+    /usr/lib/python3/dist-packages/torch/include/torch/csrc/api/include/torch/python.h(173): warning #3189-D: "module" is parsed as an identifier rather than a keyword because the tokens that follow it do not match those of a preprocessor directive
+                      module.to(
+                      ^
+
+    /home/ubuntu/g0/FlashMLA/csrc/cutlass/include/cutlass/gemm/collective/sm100_blockscaled_mma_array_warpspecialized_rcggemm.hpp(694): warning #2908-D: the implicit by-copy capture of "this" is deprecated
+              Tensor mSFB_tmp = observed_tma_load_sfb_->get_tma_tensor(shape(layout_SFB));
+                                ^
+
+    /home/ubuntu/g0/FlashMLA/csrc/cutlass/include/cutlass/gemm/collective/sm100_blockscaled_sparse_mma_warpspecialized.hpp(902): warning #2908-D: the implicit by-copy capture of "this" is deprecated
+              Tensor mSFB_tmp = observed_tma_load_sfb_->get_tma_tensor(shape(layout_SFB_));
+                                ^
+
+    /home/ubuntu/g0/FlashMLA/csrc/cutlass/include/cutlass/gemm/collective/sm100_blockscaled_mma_warpspecialized.hpp(717): warning #2908-D: the implicit by-copy capture of "this" is deprecated
+              Tensor mSFB_tmp = observed_tma_load_sfb_->get_tma_tensor(shape(layout_SFB_));
+                                ^
+
+    /home/ubuntu/g0/FlashMLA/csrc/cutlass/include/cutlass/gemm/collective/sm100_blockscaled_mma_array_warpspecialized.hpp(727): warning #2908-D: the implicit by-copy capture of "this" is deprecated
+              Tensor mSFB_tmp = observed_tma_load_sfb_->get_tma_tensor(shape(layout_SFB));
+                                ^
+
+    /home/ubuntu/g0/FlashMLA/csrc/cutlass/include/cutlass/gemm/collective/sm100_blockscaled_mma_mixed_tma_cpasync_warpspecialized.hpp(541): warning #2908-D: the implicit by-copy capture of "this" is deprecated
+              Tensor mSFB_tmp = observed_tma_load_sfb_->get_tma_tensor(shape(layout_SFB_));
+                                ^
+
+    /home/ubuntu/g0/FlashMLA/csrc/cutlass/include/cutlass/gemm/collective/sm103_blockscaled_mma_warpspecialized.hpp(682): warning #2908-D: the implicit by-copy capture of "this" is deprecated
+              Tensor mSFB_tmp = observed_tma_load_sfb_->get_tma_tensor(shape(params.layout_SFB));
+                                ^
+
+    /home/ubuntu/g0/FlashMLA/csrc/cutlass/include/cutlass/gemm/collective/sm103_blockscaled_mma_array_warpspecialized.hpp(810): warning #2908-D: the implicit by-copy capture of "this" is deprecated
+              Tensor mSFB_tmp = observed_tma_load_sfb_->get_tma_tensor(shape(layout_SFB));
+                                ^
+
+    /usr/lib/python3/dist-packages/torch/include/torch/csrc/api/include/torch/nn/modules/container/any_module_holder.h(92): warning #3189-D: "module" is parsed as an identifier rather than a keyword because the tokens that follow it do not match those of a preprocessor directive
+                module->_forward_populate_default_args(std::move(arguments)));
+                ^
+
+    Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+    /usr/lib/python3/dist-packages/torch/include/torch/csrc/api/include/torch/python.h(92): warning #3189-D: "module" is parsed as an identifier rather than a keyword because the tokens that follow it do not match those of a preprocessor directive
+        module.attr(name) = wrapper_class;
+        ^
+
+    /usr/lib/python3/dist-packages/torch/include/torch/csrc/api/include/torch/python.h(154): warning #3189-D: "module" is parsed as an identifier rather than a keyword because the tokens that follow it do not match those of a preprocessor directive
+                    module.to(
+                    ^
+
+    /usr/lib/python3/dist-packages/torch/include/torch/csrc/api/include/torch/python.h(158): warning #3189-D: "module" is parsed as an identifier rather than a keyword because the tokens that follow it do not match those of a preprocessor directive
+                    module.to(detail::py_object_to_dtype(object), non_blocking);
+                    ^
+
+    /usr/lib/python3/dist-packages/torch/include/torch/csrc/api/include/torch/python.h(169): warning #3189-D: "module" is parsed as an identifier rather than a keyword because the tokens that follow it do not match those of a preprocessor directive
+                      module.to(detail::py_object_to_dtype(dtype), non_blocking);
+                      ^
+
+    /usr/lib/python3/dist-packages/torch/include/torch/csrc/api/include/torch/python.h(171): warning #3189-D: "module" is parsed as an identifier rather than a keyword because the tokens that follow it do not match those of a preprocessor directive
+                      module.to(detail::py_object_to_device(device), non_blocking);
+                      ^
+
+    /usr/lib/python3/dist-packages/torch/include/torch/csrc/api/include/torch/python.h(173): warning #3189-D: "module" is parsed as an identifier rather than a keyword because the tokens that follow it do not match those of a preprocessor directive
+                      module.to(
+                      ^
+
+    ptxas info    : 218094 bytes gmem
+    ptxas info    : Compiling entry function '_ZN7cutlass13device_kernelINS_4fmha6kernel36Sm100FmhaBwdKernelTmaWarpSpecializedIN4cute5tupleIJiiiiNS5_IJiiEEEEEENS_10bfloat16_tEfNS5_IJNS4_1CILi128EEESA_SA_SA_EEENS1_10collective23ResidualMaskForBackwardEEEEEvNT_6ParamsE' for 'sm_90a'
+    ptxas info    : Function properties for _ZN7cutlass13device_kernelINS_4fmha6kernel36Sm100FmhaBwdKernelTmaWarpSpecializedIN4cute5tupleIJiiiiNS5_IJiiEEEEEENS_10bfloat16_tEfNS5_IJNS4_1CILi128EEESA_SA_SA_EEENS1_10collective23ResidualMaskForBackwardEEEEEvNT_6ParamsE
+        0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+    ptxas info    : Used 24 registers, used 0 barriers
+    ptxas info    : Compile time = 6.404 ms
+    ptxas info    : Compiling entry function '_ZN7cutlass13device_kernelINS_4fmha6kernel39Sm100FmhaBwdMlaKernelTmaWarpSpecializedIN4cute5tupleIJiiiiNS5_IJiiEEEEEENS_10bfloat16_tEfNS5_IJNS4_1CILi64EEENS9_ILi128EEENS9_ILi192EEESB_EEENS1_10collective23ResidualMaskForBackwardEEEEEvNT_6ParamsE' for 'sm_90a'
+    ptxas info    : Function properties for _ZN7cutlass13device_kernelINS_4fmha6kernel39Sm100FmhaBwdMlaKernelTmaWarpSpecializedIN4cute5tupleIJiiiiNS5_IJiiEEEEEENS_10bfloat16_tEfNS5_IJNS4_1CILi64EEENS9_ILi128EEENS9_ILi192EEESB_EEENS1_10collective23ResidualMaskForBackwardEEEEEvNT_6ParamsE
+        0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+    ptxas info    : Used 24 registers, used 0 barriers
+    ptxas info    : Compile time = 1.662 ms
+    ptxas info    : Compiling entry function '_ZN7cutlass13device_kernelINS_4fmha6kernel36Sm100FmhaBwdKernelTmaWarpSpecializedIN4cute5tupleIJNS1_10collective14VariableLengthES7_iiNS5_IJiiEEEEEENS_10bfloat16_tEfNS5_IJNS4_1CILi128EEESC_SC_SC_EEENS6_23ResidualMaskForBackwardEEEEEvNT_6ParamsE' for 'sm_90a'
+    ptxas info    : Function properties for _ZN7cutlass13device_kernelINS_4fmha6kernel36Sm100FmhaBwdKernelTmaWarpSpecializedIN4cute5tupleIJNS1_10collective14VariableLengthES7_iiNS5_IJiiEEEEEENS_10bfloat16_tEfNS5_IJNS4_1CILi128EEESC_SC_SC_EEENS6_23ResidualMaskForBackwardEEEEEvNT_6ParamsE
+        0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+    ptxas info    : Used 24 registers, used 0 barriers
+    ptxas info    : Compile time = 1.488 ms
+    ptxas info    : Compiling entry function '_ZN7cutlass13device_kernelINS_4fmha6kernel39Sm100FmhaBwdMlaKernelTmaWarpSpecializedIN4cute5tupleIJNS1_10collective14VariableLengthES7_iiNS5_IJiiEEEEEENS_10bfloat16_tEfNS5_IJNS4_1CILi64EEENSB_ILi128EEENSB_ILi192EEESD_EEENS6_23ResidualMaskForBackwardEEEEEvNT_6ParamsE' for 'sm_90a'
+    ptxas info    : Function properties for _ZN7cutlass13device_kernelINS_4fmha6kernel39Sm100FmhaBwdMlaKernelTmaWarpSpecializedIN4cute5tupleIJNS1_10collective14VariableLengthES7_iiNS5_IJiiEEEEEENS_10bfloat16_tEfNS5_IJNS4_1CILi64EEENSB_ILi128EEENSB_ILi192EEESD_EEENS6_23ResidualMaskForBackwardEEEEEvNT_6ParamsE
+        0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+    ptxas info    : Used 24 registers, used 0 barriers
+    ptxas info    : Compile time = 1.422 ms
+    ptxas info    : Compiling entry function '_ZN7cutlass13device_kernelINS_4fmha6kernel36Sm100FmhaBwdKernelTmaWarpSpecializedIN4cute5tupleIJiiiiNS5_IJiiEEEEEENS_10bfloat16_tEfNS5_IJNS4_1CILi128EEESA_SA_SA_EEENS1_10collective21CausalForBackwardMaskILb0EEEEEEEvNT_6ParamsE' for 'sm_90a'
+    ptxas info    : Function properties for _ZN7cutlass13device_kernelINS_4fmha6kernel36Sm100FmhaBwdKernelTmaWarpSpecializedIN4cute5tupleIJiiiiNS5_IJiiEEEEEENS_10bfloat16_tEfNS5_IJNS4_1CILi128EEESA_SA_SA_EEENS1_10collective21CausalForBackwardMaskILb0EEEEEEEvNT_6ParamsE
+        0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+    ptxas info    : Used 24 registers, used 0 barriers
+    ptxas info    : Compile time = 1.430 ms
+    ptxas info    : Compiling entry function '_ZN7cutlass13device_kernelINS_4fmha6kernel39Sm100FmhaBwdMlaKernelTmaWarpSpecializedIN4cute5tupleIJiiiiNS5_IJiiEEEEEENS_10bfloat16_tEfNS5_IJNS4_1CILi64EEENS9_ILi128EEENS9_ILi192EEESB_EEENS1_10collective21CausalForBackwardMaskILb0EEEEEEEvNT_6ParamsE' for 'sm_90a'
+    ptxas info    : Function properties for _ZN7cutlass13device_kernelINS_4fmha6kernel39Sm100FmhaBwdMlaKernelTmaWarpSpecializedIN4cute5tupleIJiiiiNS5_IJiiEEEEEENS_10bfloat16_tEfNS5_IJNS4_1CILi64EEENS9_ILi128EEENS9_ILi192EEESB_EEENS1_10collective21CausalForBackwardMaskILb0EEEEEEEvNT_6ParamsE
+        0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+    ptxas info    : Used 24 registers, used 0 barriers
+    ptxas info    : Compile time = 1.433 ms
+    ptxas info    : Compiling entry function '_ZN7cutlass13device_kernelINS_4fmha6kernel20FmhaKernelBwdConvertIN4cute5tupleIJiiiiNS5_IJiiEEEEEENS_10bfloat16_tEfEEEEvNT_6ParamsE' for 'sm_90a'
+    ptxas info    : Function properties for _ZN7cutlass13device_kernelINS_4fmha6kernel20FmhaKernelBwdConvertIN4cute5tupleIJiiiiNS5_IJiiEEEEEENS_10bfloat16_tEfEEEEvNT_6ParamsE
+        0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+    ptxas info    : Used 24 registers, used 0 barriers
+    ptxas info    : Compile time = 1.481 ms
+    ptxas info    : Compiling entry function '_ZN7cutlass13device_kernelINS_4fmha6kernel19FmhaKernelBwdSumOdOIN4cute5tupleIJiiiiNS5_IJiiEEEEEENS_10bfloat16_tEfEEEEvNT_6ParamsE' for 'sm_90a'
+    ptxas info    : Function properties for _ZN7cutlass13device_kernelINS_4fmha6kernel19FmhaKernelBwdSumOdOIN4cute5tupleIJiiiiNS5_IJiiEEEEEENS_10bfloat16_tEfEEEEvNT_6ParamsE
+        0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+    ptxas info    : Used 24 registers, used 0 barriers
+    ptxas info    : Compile time = 1.444 ms
+    ptxas info    : Compiling entry function '_ZN7cutlass13device_kernelINS_4fmha6kernel36Sm100FmhaBwdKernelTmaWarpSpecializedIN4cute5tupleIJNS1_10collective14VariableLengthES7_iiNS5_IJiiEEEEEENS_10bfloat16_tEfNS5_IJNS4_1CILi128EEESC_SC_SC_EEENS6_21CausalForBackwardMaskILb0EEEEEEEvNT_6ParamsE' for 'sm_90a'
+    ptxas info    : Function properties for _ZN7cutlass13device_kernelINS_4fmha6kernel36Sm100FmhaBwdKernelTmaWarpSpecializedIN4cute5tupleIJNS1_10collective14VariableLengthES7_iiNS5_IJiiEEEEEENS_10bfloat16_tEfNS5_IJNS4_1CILi128EEESC_SC_SC_EEENS6_21CausalForBackwardMaskILb0EEEEEEEvNT_6ParamsE
+        0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+    ptxas info    : Used 24 registers, used 0 barriers
+    ptxas info    : Compile time = 1.459 ms
+    ptxas info    : Compiling entry function '_ZN7cutlass13device_kernelINS_4fmha6kernel39Sm100FmhaBwdMlaKernelTmaWarpSpecializedIN4cute5tupleIJNS1_10collective14VariableLengthES7_iiNS5_IJiiEEEEEENS_10bfloat16_tEfNS5_IJNS4_1CILi64EEENSB_ILi128EEENSB_ILi192EEESD_EEENS6_21CausalForBackwardMaskILb0EEEEEEEvNT_6ParamsE' for 'sm_90a'
+    ptxas info    : Function properties for _ZN7cutlass13device_kernelINS_4fmha6kernel39Sm100FmhaBwdMlaKernelTmaWarpSpecializedIN4cute5tupleIJNS1_10collective14VariableLengthES7_iiNS5_IJiiEEEEEENS_10bfloat16_tEfNS5_IJNS4_1CILi64EEENSB_ILi128EEENSB_ILi192EEESD_EEENS6_21CausalForBackwardMaskILb0EEEEEEEvNT_6ParamsE
+        0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+    ptxas info    : Used 24 registers, used 0 barriers
+    ptxas info    : Compile time = 1.458 ms
+    ptxas info    : Compiling entry function '_ZN7cutlass13device_kernelINS_4fmha6kernel20FmhaKernelBwdConvertIN4cute5tupleIJNS1_10collective14VariableLengthES7_iiNS5_IJiiEEEEEENS_10bfloat16_tEfEEEEvNT_6ParamsE' for 'sm_90a'
+    ptxas info    : Function properties for _ZN7cutlass13device_kernelINS_4fmha6kernel20FmhaKernelBwdConvertIN4cute5tupleIJNS1_10collective14VariableLengthES7_iiNS5_IJiiEEEEEENS_10bfloat16_tEfEEEEvNT_6ParamsE
+        0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+    ptxas info    : Used 24 registers, used 0 barriers
+    ptxas info    : Compile time = 1.498 ms
+    ptxas info    : Compiling entry function '_ZN7cutlass13device_kernelINS_4fmha6kernel19FmhaKernelBwdSumOdOIN4cute5tupleIJNS1_10collective14VariableLengthES7_iiNS5_IJiiEEEEEENS_10bfloat16_tEfEEEEvNT_6ParamsE' for 'sm_90a'
+    ptxas info    : Function properties for _ZN7cutlass13device_kernelINS_4fmha6kernel19FmhaKernelBwdSumOdOIN4cute5tupleIJNS1_10collective14VariableLengthES7_iiNS5_IJiiEEEEEENS_10bfloat16_tEfEEEEvNT_6ParamsE
+        0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+    ptxas info    : Used 24 registers, used 0 barriers
+    ptxas info    : Compile time = 1.483 ms
+    creating build/lib.linux-x86_64-cpython-312
+    creating build/lib.linux-x86_64-cpython-312/flash_mla
+    x86_64-linux-gnu-g++ -shared -Wl,-O1 -Wl,-Bsymbolic-functions -Wl,-Bsymbolic-functions -Wl,-z,relro -g -fwrapv -O2 /home/ubuntu/g0/FlashMLA/build/temp.linux-x86_64-cpython-312/csrc/api/api.o /home/ubuntu/g0/FlashMLA/build/temp.linux-x86_64-cpython-312/csrc/sm100/decode/head64/instantiations/model1.o /home/ubuntu/g0/FlashMLA/build/temp.linux-x86_64-cpython-312/csrc/sm100/decode/head64/instantiations/v32.o /home/ubuntu/g0/FlashMLA/build/temp.linux-x86_64-cpython-312/csrc/sm100/prefill/dense/fmha_cutlass_bwd_sm100.o /home/ubuntu/g0/FlashMLA/build/temp.linux-x86_64-cpython-312/csrc/sm100/prefill/dense/fmha_cutlass_fwd_sm100.o /home/ubuntu/g0/FlashMLA/build/temp.linux-x86_64-cpython-312/csrc/sm100/prefill/sparse/fwd/head128/instantiations/phase1_k512.o /home/ubuntu/g0/FlashMLA/build/temp.linux-x86_64-cpython-312/csrc/sm100/prefill/sparse/fwd/head128/instantiations/phase1_k576.o /home/ubuntu/g0/FlashMLA/build/temp.linux-x86_64-cpython-312/csrc/sm100/prefill/sparse/fwd/head64/instantiations/phase1_k512.o /home/ubuntu/g0/FlashMLA/build/temp.linux-x86_64-cpython-312/csrc/sm100/prefill/sparse/fwd/head64/instantiations/phase1_k576.o /home/ubuntu/g0/FlashMLA/build/temp.linux-x86_64-cpython-312/csrc/sm100/prefill/sparse/fwd_for_small_topk/head128/instantiations/phase1_decode_k512.o /home/ubuntu/g0/FlashMLA/build/temp.linux-x86_64-cpython-312/csrc/sm100/prefill/sparse/fwd_for_small_topk/head128/instantiations/phase1_prefill_k512.o /home/ubuntu/g0/FlashMLA/build/temp.linux-x86_64-cpython-312/csrc/sm90/decode/dense/instantiations/bf16.o /home/ubuntu/g0/FlashMLA/build/temp.linux-x86_64-cpython-312/csrc/sm90/decode/dense/instantiations/fp16.o /home/ubuntu/g0/FlashMLA/build/temp.linux-x86_64-cpython-312/csrc/sm90/decode/sparse_fp8/instantiations/model1_persistent_h128.o /home/ubuntu/g0/FlashMLA/build/temp.linux-x86_64-cpython-312/csrc/sm90/decode/sparse_fp8/instantiations/model1_persistent_h64.o /home/ubuntu/g0/FlashMLA/build/temp.linux-x86_64-cpython-312/csrc/sm90/decode/sparse_fp8/instantiations/v32_persistent_h128.o /home/ubuntu/g0/FlashMLA/build/temp.linux-x86_64-cpython-312/csrc/sm90/decode/sparse_fp8/instantiations/v32_persistent_h64.o /home/ubuntu/g0/FlashMLA/build/temp.linux-x86_64-cpython-312/csrc/sm90/prefill/sparse/fwd.o /home/ubuntu/g0/FlashMLA/build/temp.linux-x86_64-cpython-312/csrc/sm90/prefill/sparse/instantiations/phase1_k512.o /home/ubuntu/g0/FlashMLA/build/temp.linux-x86_64-cpython-312/csrc/sm90/prefill/sparse/instantiations/phase1_k512_topklen.o /home/ubuntu/g0/FlashMLA/build/temp.linux-x86_64-cpython-312/csrc/sm90/prefill/sparse/instantiations/phase1_k576.o /home/ubuntu/g0/FlashMLA/build/temp.linux-x86_64-cpython-312/csrc/sm90/prefill/sparse/instantiations/phase1_k576_topklen.o /home/ubuntu/g0/FlashMLA/build/temp.linux-x86_64-cpython-312/csrc/smxx/decode/combine/combine.o /home/ubuntu/g0/FlashMLA/build/temp.linux-x86_64-cpython-312/csrc/smxx/decode/get_decoding_sched_meta/get_decoding_sched_meta.o -L/usr/lib/python3/dist-packages/torch/lib -L/usr/lib64 -L/usr/lib/x86_64-linux-gnu -lc10 -ltorch -ltorch_cpu -ltorch_python -lcudart -lc10_cuda -ltorch_cuda -o build/lib.linux-x86_64-cpython-312/flash_mla/cuda.cpython-312-x86_64-linux-gnu.so
+    copying build/lib.linux-x86_64-cpython-312/flash_mla/cuda.cpython-312-x86_64-linux-gnu.so -> flash_mla
+    Creating /home/ubuntu/.local/lib/python3.12/site-packages/flash-mla.egg-link (link to .)
+    Adding flash-mla 1.0.0+15f13e5 to easy-install.pth file
+
+    Installed /home/ubuntu/g0/FlashMLA
+Successfully installed flash-mla-1.0.0+15f13e5

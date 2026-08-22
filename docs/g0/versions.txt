@@ -1,0 +1,5 @@
+580.105.08, NVIDIA H100 80GB HBM3
+Build cuda_12.8.r12.8/compiler.35583870_0
+torch 2.7.0 cuda 12.8
+Version 2025.1.1.0 (build 35528883) (public-release)
+Description:	Ubuntu 24.04.4 LTS
