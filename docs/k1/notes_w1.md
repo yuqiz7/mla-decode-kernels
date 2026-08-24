@@ -119,3 +119,46 @@ Conclusion: no discrepancy in the accounting. The design estimate assumed one
 query token per request (s_q = 1); FlashMLA's headline number doubles FLOPs per
 KV byte by batching 2 query tokens. When comparing our kernels against
 FlashMLA, compare per-`s_q` rows.
+
+## v0 -> v1 delta (B=32, S=8192, Hq=32, Hkv=8, bs=16, H100 SXM)
+
+Extracted NCU rows (dram%, L1TEX global-load sectors/request, warps_active%,
+occupancy limiter, top-3 stalls):
+
+```
+v0: 3.65, 1.67, 47.51, registers+warps (16 blocks/SM), long_scoreboard=6.716, short_scoreboard=2.241, wait=1.987
+v1: 14.55, 5.67, 47.54, registers+warps (16 blocks/SM), long_scoreboard=11.023, wait=1.912, short_scoreboard=1.211
+```
+
+Bench: median 7.878 ms -> 2.005 ms, a **3.93x** speedup (4.07% -> 15.99% of
+KV-bytes speed-of-light).
+
+- **The 3.93x is almost pure warp overlap, not faster per-token work.** v0's
+  single serial scan spends 7.878 ms / 8192 = 962 ns per token; v1's four
+  concurrent per-warp scans each spend 2.005 ms / 2048 = 979 ns per token.
+  Per-warp per-token latency is unchanged within 2% — v1 wins by running four
+  dependency chains in parallel, exactly the k1-005 design intent (the two
+  block-wide syncs per token that v0 paid are gone, but their cost was
+  evidently hidden inside the load latency anyway).
+- **DRAM traffic is 1x KV size in both**: 1.0027 GiB (v0, 122.4 GB/s x
+  8.795 ms) vs 1.0026 GiB (v1, 487.9 GB/s x 2.206 ms) against a 1.000 GiB KV
+  working set. L2 keeps absorbing the 4 q-heads' re-reads of the shared KV
+  head; nothing extra was spent to overlap warps.
+- **sectors/request 1.67 -> 5.67.** The v1 number is below the ideal 8 for
+  256 B warp-coalesced loads, but the gap is bookkeeping, not miscoalescing:
+  per token each warp issues two perfect 8-sector vector loads (K row, V row)
+  plus one uniform 4 B `block_table` lookup (1 sector), and (8+8+1)/3 = 5.67.
+- **long_scoreboard 6.72 -> 11.02 is a denominator effect.** The metric is
+  stall cycles per *issued instruction*. v1 issues far fewer instructions per
+  KV byte (one 8 B load replaces four 2 B loads; the shfl reduction replaces
+  the smem reduction's ~14 instructions plus two barriers), so the same
+  latency-bound waiting is divided by a much smaller instruction count.
+  Total stall time fell with runtime (3.9x); latency hiding did not regress.
+
+Remaining target: at ~488 GB/s sustained and ~650 ns DRAM latency the grid
+keeps only ~0.3 MB in flight, versus the ~2 MB Little's-law requirement for
+3.35 TB/s. Each warp still has just one token's K (256 B) outstanding at a
+time because the online-softmax chain serializes consecutive tokens.
+Directions: unroll multiple tokens per warp (issue several K rows before the
+softmax update consumes them) or v2 split-KV (more CTAs per request so more
+independent chains exist GPU-wide).
