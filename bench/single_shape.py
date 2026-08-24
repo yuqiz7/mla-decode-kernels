@@ -1,4 +1,4 @@
-"""Single-shape benchmark for the v0_naive GQA decode kernel."""
+"""Single-shape benchmark for the GQA decode kernels (--kernel v0|v1)."""
 
 import argparse
 import json
@@ -12,7 +12,7 @@ import torch
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "python"))
 
-from binding import gqa_decode_v0
+from binding import KERNELS
 from reference import attention_ref
 
 D = 128
@@ -35,9 +35,9 @@ def make_case(B, S, Hq, Hkv, bs, seed=0):
     return q, k_cache, v_cache, block_table, seq_lens
 
 
-def spot_check(q, k_cache, v_cache, block_table, seq_lens, scale):
+def spot_check(kernel_fn, q, k_cache, v_cache, block_table, seq_lens, scale):
     nb = min(2, q.shape[0])
-    out = gqa_decode_v0(q, k_cache, v_cache, block_table, seq_lens, scale)
+    out = kernel_fn(q, k_cache, v_cache, block_table, seq_lens, scale)
     torch.cuda.synchronize()
     ref = attention_ref(
         q[:nb], k_cache, v_cache, block_table[:nb], seq_lens[:nb], scale
@@ -68,24 +68,26 @@ def main():
     ap.add_argument("--Hq", type=int, default=32)
     ap.add_argument("--Hkv", type=int, default=8)
     ap.add_argument("--bs", type=int, default=16)
+    ap.add_argument("--kernel", choices=sorted(KERNELS.keys()), default="v0")
     ap.add_argument("--ncu-mode", action="store_true",
                     help="run the kernel exactly once, no warmup, no timing")
     args = ap.parse_args()
 
     scale = 1.0 / math.sqrt(D)
+    kernel_fn = KERNELS[args.kernel]
     q, k_cache, v_cache, block_table, seq_lens = make_case(
         args.B, args.S, args.Hq, args.Hkv, args.bs
     )
 
     if args.ncu_mode:
-        gqa_decode_v0(q, k_cache, v_cache, block_table, seq_lens, scale)
+        kernel_fn(q, k_cache, v_cache, block_table, seq_lens, scale)
         torch.cuda.synchronize()
         return
 
-    spot_check(q, k_cache, v_cache, block_table, seq_lens, scale)
+    spot_check(kernel_fn, q, k_cache, v_cache, block_table, seq_lens, scale)
 
     for _ in range(10):
-        gqa_decode_v0(q, k_cache, v_cache, block_table, seq_lens, scale)
+        kernel_fn(q, k_cache, v_cache, block_table, seq_lens, scale)
     torch.cuda.synchronize()
 
     times = []
@@ -93,7 +95,7 @@ def main():
     end = torch.cuda.Event(enable_timing=True)
     for _ in range(50):
         start.record()
-        gqa_decode_v0(q, k_cache, v_cache, block_table, seq_lens, scale)
+        kernel_fn(q, k_cache, v_cache, block_table, seq_lens, scale)
         end.record()
         torch.cuda.synchronize()
         times.append(start.elapsed_time(end))
@@ -112,7 +114,7 @@ def main():
     print(f"clocks (sm, mem) = {clocks}")
 
     result = {
-        "kernel": "v0_naive",
+        "kernel": args.kernel,
         "B": args.B, "S": args.S, "Hq": args.Hq, "Hkv": args.Hkv, "bs": args.bs,
         "median_ms": median_ms,
         "kv_bytes": kv_bytes,
@@ -125,7 +127,7 @@ def main():
     os.makedirs(out_dir, exist_ok=True)
     path = os.path.join(
         out_dir,
-        f"v0_{args.B}x{args.S}x{args.Hq}x{args.Hkv}x{args.bs}_{ts}.json",
+        f"{args.kernel}_{args.B}x{args.S}x{args.Hq}x{args.Hkv}x{args.bs}_{ts}.json",
     )
     with open(path, "w") as f:
         json.dump(result, f, indent=2)
