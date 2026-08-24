@@ -33,15 +33,21 @@ Terminate first. Keep a single session to 2 hours or less.
 7. Deploy key: on GitHub, **delete the old deploy key and add the new one**
    (generated on this instance), with **write access** checked.
 8. `git clone` this repository.
+9. Git identity: `git config --global user.name yuqiz7` and
+   `git config --global user.email yz5072@columbia.edu`.
+   - **`git config user.email` must be yz5072@columbia.edu (never the gmail
+     address — it belongs to a different GitHub account).**
+   - **After the first commit, check `git log` shows no Co-Authored-By
+     trailer.**
 
 ## 5. Tooling
 
-9. Install Claude Code and log in.
-10. Run `scripts/setup_env.sh` (add `--with-flashmla` if FlashMLA is needed).
-11. Run `scripts/verify_env.sh` — proceed only on `VERIFY OK`.
+10. Install Claude Code and log in.
+11. Run `scripts/setup_env.sh` (add `--with-flashmla` if FlashMLA is needed).
+12. Run `scripts/verify_env.sh` — proceed only on `VERIFY OK`.
 
 ## 6. Work and teardown
 
-12. Do the work.
-13. `git push` (work not pushed is lost at Terminate).
-14. **Terminate** the instance.
+13. Do the work.
+14. `git push` (work not pushed is lost at Terminate).
+15. **Terminate** the instance.
