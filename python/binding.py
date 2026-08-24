@@ -13,6 +13,7 @@ _ext = load(
     sources=[
         os.path.join(_REPO_ROOT, "kernels", "gqa_decode", "v0_naive.cu"),
         os.path.join(_REPO_ROOT, "kernels", "gqa_decode", "v1_vectorized.cu"),
+        os.path.join(_REPO_ROOT, "kernels", "gqa_decode", "v2_splitkv.cu"),
         os.path.join(_REPO_ROOT, "python", "gqa_decode_ext.cpp"),
     ],
     build_directory=_BUILD_DIR,
@@ -23,5 +24,8 @@ _ext = load(
 
 gqa_decode_v0 = _ext.gqa_decode_v0
 gqa_decode_v1 = _ext.gqa_decode_v1
+gqa_decode_v2 = _ext.gqa_decode_v2
 
-KERNELS = {"v0": gqa_decode_v0, "v1": gqa_decode_v1}
+# "v2" runs with its default num_splits=8; pass num_splits explicitly via
+# gqa_decode_v2 to override.
+KERNELS = {"v0": gqa_decode_v0, "v1": gqa_decode_v1, "v2": gqa_decode_v2}

@@ -9,10 +9,14 @@ using launch_fn_t = void (*)(const __nv_bfloat16*, const __nv_bfloat16*,
                              __nv_bfloat16*, int, int, int, int, int, float,
                              cudaStream_t);
 
-static torch::Tensor gqa_decode_run(launch_fn_t launch, torch::Tensor q,
-                                    torch::Tensor k_cache, torch::Tensor v_cache,
-                                    torch::Tensor block_table,
-                                    torch::Tensor seq_lens, double scale) {
+struct GqaDims {
+  int64_t B, Hq, Hkv, block_size, max_blocks;
+};
+
+static GqaDims check_inputs(const torch::Tensor& q, const torch::Tensor& k_cache,
+                            const torch::Tensor& v_cache,
+                            const torch::Tensor& block_table,
+                            const torch::Tensor& seq_lens) {
   TORCH_CHECK(q.is_cuda(), "q must be a CUDA tensor");
   TORCH_CHECK(q.scalar_type() == torch::kBFloat16, "q must be bf16");
   TORCH_CHECK(q.is_contiguous(), "q must be contiguous");
@@ -46,7 +50,6 @@ static torch::Tensor gqa_decode_run(launch_fn_t launch, torch::Tensor q,
   const int64_t Hkv = k_cache.size(2);
   const int64_t block_size = k_cache.size(1);
   const int64_t max_blocks = block_table.size(1);
-
   TORCH_CHECK(Hq % Hkv == 0, "Hq must be divisible by Hkv");
   TORCH_CHECK(block_table.size(0) == B, "block_table batch dim must match q");
   TORCH_CHECK(seq_lens.size(0) == B, "seq_lens batch dim must match q");
@@ -55,6 +58,14 @@ static torch::Tensor gqa_decode_run(launch_fn_t launch, torch::Tensor q,
                   q.device() == seq_lens.device(),
               "all tensors must be on the same device");
 
+  return {B, Hq, Hkv, block_size, max_blocks};
+}
+
+static torch::Tensor gqa_decode_run(launch_fn_t launch, torch::Tensor q,
+                                    torch::Tensor k_cache, torch::Tensor v_cache,
+                                    torch::Tensor block_table,
+                                    torch::Tensor seq_lens, double scale) {
+  const GqaDims d = check_inputs(q, k_cache, v_cache, block_table, seq_lens);
   auto out = torch::empty_like(q);
   cudaStream_t stream = at::cuda::getCurrentCUDAStream();
 
@@ -63,8 +74,8 @@ static torch::Tensor gqa_decode_run(launch_fn_t launch, torch::Tensor q,
       reinterpret_cast<const __nv_bfloat16*>(k_cache.data_ptr()),
       reinterpret_cast<const __nv_bfloat16*>(v_cache.data_ptr()),
       block_table.data_ptr<int>(), seq_lens.data_ptr<int>(),
-      reinterpret_cast<__nv_bfloat16*>(out.data_ptr()), (int)B, (int)Hq,
-      (int)Hkv, (int)block_size, (int)max_blocks, (float)scale, stream);
+      reinterpret_cast<__nv_bfloat16*>(out.data_ptr()), (int)d.B, (int)d.Hq,
+      (int)d.Hkv, (int)d.block_size, (int)d.max_blocks, (float)scale, stream);
 
   return out;
 }
@@ -83,9 +94,41 @@ torch::Tensor gqa_decode_v1(torch::Tensor q, torch::Tensor k_cache,
                         seq_lens, scale);
 }
 
+torch::Tensor gqa_decode_v2(torch::Tensor q, torch::Tensor k_cache,
+                            torch::Tensor v_cache, torch::Tensor block_table,
+                            torch::Tensor seq_lens, double scale,
+                            int64_t num_splits) {
+  const GqaDims d = check_inputs(q, k_cache, v_cache, block_table, seq_lens);
+  TORCH_CHECK(num_splits >= 1 && num_splits <= 512,
+              "num_splits must be in [1, 512]");
+
+  auto out = torch::empty_like(q);
+  auto f32 = torch::TensorOptions().dtype(torch::kFloat32).device(q.device());
+  auto ws_acc = torch::empty({d.B, d.Hq, num_splits, 128}, f32);
+  auto ws_m = torch::empty({d.B, d.Hq, num_splits}, f32);
+  auto ws_l = torch::empty({d.B, d.Hq, num_splits}, f32);
+  cudaStream_t stream = at::cuda::getCurrentCUDAStream();
+
+  gqa_decode_v2_launch(
+      reinterpret_cast<const __nv_bfloat16*>(q.data_ptr()),
+      reinterpret_cast<const __nv_bfloat16*>(k_cache.data_ptr()),
+      reinterpret_cast<const __nv_bfloat16*>(v_cache.data_ptr()),
+      block_table.data_ptr<int>(), seq_lens.data_ptr<int>(),
+      reinterpret_cast<__nv_bfloat16*>(out.data_ptr()), (int)d.B, (int)d.Hq,
+      (int)d.Hkv, (int)d.block_size, (int)d.max_blocks, (float)scale,
+      (int)num_splits, ws_acc.data_ptr<float>(), ws_m.data_ptr<float>(),
+      ws_l.data_ptr<float>(), stream);
+
+  return out;
+}
+
 PYBIND11_MODULE(TORCH_EXTENSION_NAME, m) {
   m.def("gqa_decode_v0", &gqa_decode_v0,
         "GQA decode v0 naive kernel (paged KV, bf16)");
   m.def("gqa_decode_v1", &gqa_decode_v1,
         "GQA decode v1 vectorized kernel (paged KV, bf16)");
+  m.def("gqa_decode_v2", &gqa_decode_v2,
+        "GQA decode v2 split-KV kernel (paged KV, bf16)", py::arg("q"),
+        py::arg("k_cache"), py::arg("v_cache"), py::arg("block_table"),
+        py::arg("seq_lens"), py::arg("scale"), py::arg("num_splits") = 8);
 }
