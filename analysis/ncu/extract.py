@@ -27,11 +27,13 @@ import sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 
 
-def load_raw_metrics(path):
-    """Return {metric_name: value_str} from a .ncu-rep or raw-page CSV.
+def load_raw_rows(path):
+    """Return one {column: value_str} dict per profiled kernel from a .ncu-rep
+    or raw-page CSV.
 
-    The raw page is wide-format: row 0 metric names, row 1 units, row 2+ one
-    row per profiled kernel (we take the first).
+    The raw page is wide-format: row 0 column names (leading identification
+    columns such as "Kernel Name", then metric names), row 1 units, row 2+
+    one row per profiled kernel.
     """
     if path.endswith(".ncu-rep"):
         r = subprocess.run(
@@ -44,8 +46,8 @@ def load_raw_metrics(path):
             rows = list(csv.reader(f))
     if len(rows) < 3:
         raise SystemExit(f"{path}: expected raw-page CSV with >= 3 rows")
-    names, values = rows[0], rows[2]
-    return dict(zip(names, values))
+    names = rows[0]
+    return [dict(zip(names, r)) for r in rows[2:] if r]
 
 
 def parse_float(s):
@@ -74,9 +76,23 @@ def main():
         if os.path.exists(tables_rep):
             inputs.append(tables_rep)
 
+    # A split-KV report holds two kernels: the seven columns come from the
+    # partial kernel only; the merge kernel contributes its duration as a
+    # trailing column.
+    partial_pat = f"gqa_decode_{args.kernel}_partial"
+    merge_pat = f"gqa_decode_{args.kernel}_merge"
     metrics = {}
+    merge_row = None
     for path in inputs:
-        for name, value in load_raw_metrics(path).items():
+        rows = load_raw_rows(path)
+        primary = next(
+            (r for r in rows if partial_pat in r.get("Kernel Name", "")), rows[0]
+        )
+        if merge_row is None:
+            merge_row = next(
+                (r for r in rows if merge_pat in r.get("Kernel Name", "")), None
+            )
+        for name, value in primary.items():
             if name not in metrics or metrics[name] == "":
                 metrics[name] = value
 
@@ -124,22 +140,23 @@ def main():
     top3 = [f"{reason}={v:.3f}" for v, reason in stalls[:3]]
     top3 += [""] * (3 - len(top3))
 
+    header = [
+        "dram_throughput_pct_of_peak",
+        "l1tex_global_load_sectors_per_request",
+        "warps_active_pct_of_peak",
+        "occupancy_limiter",
+        "stall_1",
+        "stall_2",
+        "stall_3",
+    ]
+    row = [dram_pct, sectors_per_req, warps_active_pct, occ_limiter, *top3]
+    if merge_row is not None:
+        header.append("merge_kernel_ms")
+        row.append(merge_row.get("gpu__time_duration.avg", ""))
     with open(args.output, "w", newline="") as f:
         w = csv.writer(f)
-        w.writerow(
-            [
-                "dram_throughput_pct_of_peak",
-                "l1tex_global_load_sectors_per_request",
-                "warps_active_pct_of_peak",
-                "occupancy_limiter",
-                "stall_1",
-                "stall_2",
-                "stall_3",
-            ]
-        )
-        w.writerow(
-            [dram_pct, sectors_per_req, warps_active_pct, occ_limiter, *top3]
-        )
+        w.writerow(header)
+        w.writerow(row)
     print(f"wrote {args.output}")
 
 
