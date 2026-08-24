@@ -209,3 +209,79 @@ point is deferred to the W3 matrix sweep at 64/128.
   caps the version ladder at three tiers, so no v3 here; candidates for a
   later series remain multi-token unrolling per warp and larger in-flight
   windows via cp.async/TMA.
+
+## Matrix + 3-cell NCU deep dive
+
+Matrix: 64 cells (headtype {32x8, 64x8} x S {512..32768} x B {1..128} x
+block {16, 64}), archived in `bench/results/matrix_20260824_213534/`
+(per-cell JSON + `matrix_summary.csv`; `ratio_vs_flashinfer` = FlashInfer
+median / kernel median, >1 means faster than the baseline).
+
+### Matrix readings
+
+32x8 v2 ratio_vs_flashinfer (block 16), the convergence wall:
+
+| | B=1 | B=8 | B=32 | B=128 |
+|---|---|---|---|---|
+| S=512 | 0.976 | 0.685 | 0.442 | 0.358 |
+| S=2048 | 0.702 | 0.463 | 0.342 | 0.328 |
+| S=8192 | 0.463 | 0.339 | 0.322 | 0.324 |
+| S=32768 | 0.351 | 0.318 | 0.319 | 0.325 |
+
+- Every saturated 32Q cell converges to **~0.32** — FlashInfer is a steady
+  ~3.1x faster once both sides have enough work; our remaining gap is
+  in-flight bytes (no multi-token unroll / cp.async), not scheduling.
+- **v2/v1 gradient runs 38.6x -> ~1.0x**: 38.6x at (32x8, S=32768, B=1) —
+  the starvation cell v2 was built for — decaying as the v1 grid fills on
+  its own; at (64x8, S=512, B in {32,128}) v2 bottoms out at 0.98-1.01x,
+  where the second launch + merge just breaks even. (The floor is ~1.0, not
+  the predicted ~1.15.)
+- **64Q halving**: the 64x8 wall is ~0.167, half the 32Q 0.32. FlashInfer's
+  time barely moves going 32Q -> 64Q at fixed KV (0.368 -> 0.366 ms at
+  S=8192, B=32 — tensor-core batching makes extra q-heads nearly free),
+  while our per-q-head scan doubles its on-chip work (1.14 -> 2.16 ms).
+- **block 16 vs 64: prediction confirmed** — median |diff| 0.49%, and every
+  cell with B > 1 is under 2%. The 8 exceptions are all B=1 rows (worst
+  v1 at 32x8/S=8192: 30.7%), where a starved grid makes timing sensitive to
+  block-granularity effects; not a paging-cost signal.
+- **argbest num_splits: prediction half-confirmed** — monotonically
+  non-decreasing in S for every (headtype, B) column (e.g. 32x8/B=8:
+  4, 8, 32, 64), but non-monotonic in B at fixed S as predicted rollover
+  competition kicks in: 32x8/S=512 gives 16, 4, 8, 4 over B = 1, 8, 32, 128,
+  and 64x8/S=2048 gives 16, 16, 8, 4.
+- **B=1, S=512 is a launch-overhead floor, not a bandwidth result**: v2
+  0.0244 ms vs FlashInfer 0.0238 ms (ratio 0.976) with KV SOL at 2 us —
+  both sides sit on fixed launch/merge costs, so near-ties here carry no
+  bandwidth information.
+
+### 3-cell NCU deep dive (partial kernel; merge as trailing column)
+
+`analysis/ncu/matrix_cells.csv`:
+
+| cell | DRAM% | sect/req | occ% | L2 hit% | dram bytes | L2 bytes | merge ms |
+|---|---|---|---|---|---|---|---|
+| A: 32x8 S=8192 B=32 splits=32 | 24.75 | 5.65 | 97.13 | 51.11 | 1.101e9 | 3.811e9 | 0.015 |
+| B: 64x8 S=8192 B=32 splits=16 | 12.71 | 5.66 | 97.23 | 65.80 | 1.105e9 | 5.443e9 | 0.011 |
+| C: 32x8 S=32768 B=1 splits=64 | 17.95 | 5.66 | 71.93 | 13.06 | 1.367e8 | 2.318e8 | 0.025 |
+
+**Hypothesis (B vs A): the 64Q slowdown is per-q-head L2 re-reads, not
+DRAM — confirmed.** dram__bytes is flat (1.1009 -> 1.1048 GB, +0.4%, both
+~1x KV) while the partial kernel takes 1.96x longer (1.327 -> 2.594 ms) and
+DRAM% halves (24.75 -> 12.71), i.e. the extra time is spent moving the same
+DRAM working set 2x through the on-chip hierarchy; L2 hit rate rises
+51.1% -> 65.8% exactly as re-reads concentrate. One sub-prediction missed
+quantitatively: lts__t_bytes grew 1.43x, not ~2x. L1 does not explain it
+(l1tex hit rate is ~7% in both cells); a plausible mechanism is L1 MSHR
+merging of concurrent same-sector misses from co-resident CTAs of the same
+(b, hkv) group, which collapses duplicates before they are counted as L2
+requests — recorded as a hypothesis, not verified. k1-001's rejection of
+(b, kv-head) regrouping covered only the DRAM dimension; regrouping (or
+tensor-core in-group batching a la FlashInfer) would attack this L2
+re-read wall, and is listed as limitations/future work — not implemented,
+per the section-4 three-tier cap.
+
+**C quantifies the splits=64 rescue at B=1**: 2048 CTAs reach 71.9%
+achieved occupancy and 17.95% DRAM (vs v1's 32 CTAs at this shape, 38.6x
+slower in the matrix). Costs of splitting this hard: L2 hit drops to 13.1%
+(64 segments share nothing) and the merge kernel is 25 us on a 227 us
+partial (~11%, vs ~1% in A/B) — consistent with argbest stopping at 64.
