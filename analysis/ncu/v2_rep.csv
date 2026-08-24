@@ -1,0 +1,2 @@
+dram_throughput_pct_of_peak,l1tex_global_load_sectors_per_request,warps_active_pct_of_peak,occupancy_limiter,stall_1,stall_2,stall_3,merge_kernel_ms
+22.964590,5.663636,89.637920,registers+warps (16 blocks/SM),long_scoreboard=9.632,not_selected=3.206,wait=1.944,0.006656

@@ -1,0 +1,14 @@
+{
+  "kernel": "v1",
+  "B": 8,
+  "S": 32768,
+  "Hq": 32,
+  "Hkv": 8,
+  "bs": 16,
+  "num_splits": null,
+  "median_ms": 7.651008129119873,
+  "kv_bytes": 1073741824,
+  "sol_ms": 0.3205199474626865,
+  "pct_of_sol": 4.189251168650336,
+  "clocks_sm_mem": "1980 MHz, 2619 MHz"
+}
