@@ -1,13 +1,13 @@
 """Extract key metrics from an Nsight Compute report into a one-line CSV.
 
-Usage: python analysis/ncu/extract.py [inputs ...] [-o OUTPUT]
+Usage: python analysis/ncu/extract.py [inputs ...] [--kernel v0] [-o OUTPUT]
 
 Inputs may be .ncu-rep files (exported here via `ncu --import --page raw
 --csv`) or pre-exported raw-page CSVs. With no inputs, defaults to
-analysis/ncu/v0_rep.ncu-rep, plus analysis/ncu/v0_rep_tables.ncu-rep if it
-exists (supplemental run holding MemoryWorkloadAnalysis_Tables metrics that
-the main section set does not collect on NCU 2025.1). Later inputs only fill
-metrics missing from earlier ones. Default output: analysis/ncu/v0_rep.csv.
+analysis/ncu/<kernel>_rep.ncu-rep, plus analysis/ncu/<kernel>_rep_tables.ncu-rep
+if it exists (supplemental run holding MemoryWorkloadAnalysis_Tables metrics
+when the main report lacks them). Later inputs only fill metrics missing from
+earlier ones. Default output: analysis/ncu/<kernel>_rep.csv.
 
 Raw-page metric names used (NCU 2025.1.1, H100):
   gpu__dram_throughput.avg.pct_of_peak_sustained_elapsed
@@ -25,9 +25,6 @@ import subprocess
 import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-DEFAULT_REP = os.path.join(HERE, "v0_rep.ncu-rep")
-DEFAULT_TABLES_REP = os.path.join(HERE, "v0_rep_tables.ncu-rep")
-DEFAULT_OUT = os.path.join(HERE, "v0_rep.csv")
 
 
 def load_raw_metrics(path):
@@ -62,14 +59,20 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("inputs", nargs="*",
                     help=".ncu-rep or raw-page CSV files (later ones fill gaps)")
-    ap.add_argument("-o", "--output", default=DEFAULT_OUT)
+    ap.add_argument("--kernel", default="v0",
+                    help="kernel name used for default <kernel>_rep.* paths")
+    ap.add_argument("-o", "--output", default=None)
     args = ap.parse_args()
+
+    if args.output is None:
+        args.output = os.path.join(HERE, f"{args.kernel}_rep.csv")
 
     inputs = args.inputs
     if not inputs:
-        inputs = [DEFAULT_REP]
-        if os.path.exists(DEFAULT_TABLES_REP):
-            inputs.append(DEFAULT_TABLES_REP)
+        inputs = [os.path.join(HERE, f"{args.kernel}_rep.ncu-rep")]
+        tables_rep = os.path.join(HERE, f"{args.kernel}_rep_tables.ncu-rep")
+        if os.path.exists(tables_rep):
+            inputs.append(tables_rep)
 
     metrics = {}
     for path in inputs:
