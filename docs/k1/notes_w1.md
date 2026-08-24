@@ -162,3 +162,50 @@ time because the online-softmax chain serializes consecutive tokens.
 Directions: unroll multiple tokens per warp (issue several K rows before the
 softmax update consumes them) or v2 split-KV (more CTAs per request so more
 independent chains exist GPU-wide).
+
+## v1 -> v2 delta (B=32, S=8192, Hq=32, Hkv=8, bs=16, H100 SXM)
+
+v2 at the representative shape: **1.1909 ms / 26.9% of SoL** with
+num_splits=8 (v1: 2.005 ms / 15.99%).
+
+Splits sweep at the representative shape (median_ms / pct_of_sol):
+
+| num_splits | 1 | 2 | 4 | 8 | 16 | 32 |
+|---|---|---|---|---|---|---|
+| median_ms | 2.015 | 1.331 | 1.271 | 1.191 | 1.151 | 1.135 |
+| % of SoL | 15.91 | 24.09 | 25.22 | 26.91 | 27.85 | 28.24 |
+
+Monotonically rising through 32 — the predicted rollover has not appeared
+yet. On the cost side the merge kernel is only 0.0067 ms = 0.56% of the
+splits=8 total, so the split overhead is nowhere near binding; the rollover
+point is deferred to the W3 matrix sweep at 64/128.
+
+- **Small-batch case, the design target**: B=8, S=32768 (same 1 GiB KV) —
+  v1 4.19% vs v2(splits=16) 25.04% of SoL, a **5.98x** speedup. Attribution:
+  v1's grid is pinned at B*Hq = 256 CTAs against the 2112 resident slots
+  (132 SMs x 16 blocks); splits=16 raises it to 4096 CTAs and the machine
+  finally has enough independent scan chains to fill.
+- **NCU row (v2 partial, splits=8)**: DRAM 22.96%, sectors/request 5.66,
+  achieved occupancy 89.6%, limiter unchanged (registers+warps, 16
+  blocks/SM), stalls long_scoreboard=9.63, not_selected=3.21, wait=1.94.
+  The DRAM 22.96% vs the bench-derived 26.9% is a measurement-regime gap:
+  NCU replays a single cold launch while the bench reports the median of 50
+  warmed iterations — compare trends within one tool, not absolutes across.
+- **Occupancy 47.5% -> 89.6% with the same limiter**: the per-CTA ceiling
+  never moved; v1 simply could not supply enough CTAs (0.48 waves). At
+  splits=8 the grid is 8192 CTAs (~3.9 waves) and the resident slots fill
+  from the supply side, exactly the k1-006 rationale.
+- **not_selected=3.21 entering the top-3 stalls is a health signal**: it
+  counts warps that were ready but lost scheduler arbitration to another
+  ready warp — it only grows when there is a surplus of runnable warps,
+  i.e. the latency that long_scoreboard used to expose is now covered.
+- **Ablation closure**: v2(splits=1) is bitwise-equal to v1 (asserted in
+  tests) and benches at 15.91% vs v1's 15.99% — the split machinery itself
+  costs nothing measurable, so the sweep's gains are attributable to CTA
+  count alone.
+- **Remaining gap**: at 901 GB/s sustained (splits=8) the grid keeps
+  ~0.6 MB in flight versus the ~2 MB Little's-law requirement — better than
+  v1's ~0.3 MB but still short. Left as future work: the K1 plan (section 4)
+  caps the version ladder at three tiers, so no v3 here; candidates for a
+  later series remain multi-token unrolling per warp and larger in-flight
+  windows via cp.async/TMA.
