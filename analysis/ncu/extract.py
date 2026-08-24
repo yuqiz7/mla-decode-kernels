@@ -46,8 +46,24 @@ def load_raw_rows(path):
             rows = list(csv.reader(f))
     if len(rows) < 3:
         raise SystemExit(f"{path}: expected raw-page CSV with >= 3 rows")
-    names = rows[0]
-    return [dict(zip(names, r)) for r in rows[2:] if r]
+    names, units = rows[0], rows[1]
+    return [dict(zip(names, r)) for r in rows[2:] if r], dict(zip(names, units))
+
+
+# NCU auto-scales displayed units (byte/Kbyte/... are decimal SI; time in
+# nsecond..second); normalize so the output CSV is always bytes / ms.
+_BYTE_SCALE = {"byte": 1.0, "Kbyte": 1e3, "Mbyte": 1e6, "Gbyte": 1e9,
+               "Tbyte": 1e12}
+_MS_SCALE = {"nsecond": 1e-6, "usecond": 1e-3, "msecond": 1.0, "second": 1e3,
+             "ns": 1e-6, "us": 1e-3, "ms": 1.0, "s": 1e3}
+
+
+def normalize(value, unit, scale_map, what):
+    if value == "":
+        return ""
+    if unit not in scale_map:
+        raise SystemExit(f"unknown {what} unit {unit!r}")
+    return repr(float(value.replace(",", "")) * scale_map[unit])
 
 
 def parse_float(s):
@@ -82,9 +98,11 @@ def main():
     partial_pat = f"gqa_decode_{args.kernel}_partial"
     merge_pat = f"gqa_decode_{args.kernel}_merge"
     metrics = {}
+    units = {}
     merge_row = None
+    merge_units = None
     for path in inputs:
-        rows = load_raw_rows(path)
+        rows, row_units = load_raw_rows(path)
         primary = next(
             (r for r in rows if partial_pat in r.get("Kernel Name", "")), rows[0]
         )
@@ -92,9 +110,12 @@ def main():
             merge_row = next(
                 (r for r in rows if merge_pat in r.get("Kernel Name", "")), None
             )
+            if merge_row is not None:
+                merge_units = row_units
         for name, value in primary.items():
             if name not in metrics or metrics[name] == "":
                 metrics[name] = value
+                units[name] = row_units.get(name, "")
 
     def get(name):
         v = metrics.get(name, "")
@@ -107,6 +128,11 @@ def main():
         "l1tex__average_t_sectors_per_request_pipe_lsu_mem_global_op_ld.ratio"
     )
     warps_active_pct = get("sm__warps_active.avg.pct_of_peak_sustained_active")
+    l2_hit_rate = get("lts__t_sector_hit_rate.pct")
+    dram_bytes = normalize(get("dram__bytes.sum"),
+                           units.get("dram__bytes.sum", ""), _BYTE_SCALE, "byte")
+    lts_bytes = normalize(get("lts__t_bytes.sum"),
+                          units.get("lts__t_bytes.sum", ""), _BYTE_SCALE, "byte")
 
     # Occupancy limiter: the launch__occupancy_limit_* resource allowing the
     # fewest blocks per SM (ties are joined with '+').
@@ -148,11 +174,17 @@ def main():
         "stall_1",
         "stall_2",
         "stall_3",
+        "l2_hit_rate_pct",
+        "dram_bytes_sum",
+        "lts_bytes_sum",
     ]
-    row = [dram_pct, sectors_per_req, warps_active_pct, occ_limiter, *top3]
+    row = [dram_pct, sectors_per_req, warps_active_pct, occ_limiter, *top3,
+           l2_hit_rate, dram_bytes, lts_bytes]
     if merge_row is not None:
         header.append("merge_kernel_ms")
-        row.append(merge_row.get("gpu__time_duration.avg", ""))
+        row.append(normalize(merge_row.get("gpu__time_duration.avg", ""),
+                             merge_units.get("gpu__time_duration.avg", ""),
+                             _MS_SCALE, "time"))
     with open(args.output, "w", newline="") as f:
         w = csv.writer(f)
         w.writerow(header)
