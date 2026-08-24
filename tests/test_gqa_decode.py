@@ -1,4 +1,4 @@
-"""GPU correctness tests for the GQA decode kernels (v0_naive, v1_vectorized).
+"""GPU correctness tests for the GQA decode kernels (v0, v1, v2 split-KV).
 
 Tolerance atol=2e-2, rtol=2e-2: bf16 output rounding alone is ~2^-8 ~= 0.4%
 relative; on top of that the kernels' accumulation order (sequential online
@@ -16,7 +16,7 @@ import torch
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "python"))
 
-from binding import KERNELS
+from binding import KERNELS, gqa_decode_v1, gqa_decode_v2
 from reference import attention_ref
 
 ATOL = 2e-2
@@ -104,6 +104,28 @@ def test_gqa_decode(kernel, name):
     cfg = CASES[name]
     case = make_case(cfg["B"], cfg["S_list"], cfg["Hq"], cfg["Hkv"], cfg["bs"], seed=0)
     run_and_check(KERNELS[kernel], *case)
+
+
+@pytest.mark.parametrize("num_splits", [1, 3, 8, 32])
+def test_v2_num_splits(num_splits):
+    cfg = CASES["a_base"]
+    case = make_case(cfg["B"], cfg["S_list"], cfg["Hq"], cfg["Hkv"], cfg["bs"], seed=0)
+    kernel_fn = lambda *a: gqa_decode_v2(*a, num_splits=num_splits)
+    run_and_check(kernel_fn, *case)
+    if num_splits == 1:
+        # A single split runs the identical arithmetic to v1 (the merge
+        # kernel's factor is expf(0) = 1 exactly), so outputs match bitwise.
+        scale = 1.0 / math.sqrt(D)
+        out_v2 = gqa_decode_v2(*case, scale, num_splits=1)
+        out_v1 = gqa_decode_v1(*case, scale)
+        assert torch.equal(out_v2, out_v1), "v2(num_splits=1) != v1 bitwise"
+
+
+def test_v2_len1_splits8():
+    # S=1 with 8 splits: 7 empty segments must contribute factor 0.
+    cfg = CASES["c_len1"]
+    case = make_case(cfg["B"], cfg["S_list"], cfg["Hq"], cfg["Hkv"], cfg["bs"], seed=0)
+    run_and_check(lambda *a: gqa_decode_v2(*a, num_splits=8), *case)
 
 
 @pytest.mark.parametrize("kernel", list(KERNELS.keys()))
