@@ -1,9 +1,10 @@
-"""GPU correctness tests for the v0_naive GQA decode kernel.
+"""GPU correctness tests for the GQA decode kernels (v0_naive, v1_vectorized).
 
 Tolerance atol=2e-2, rtol=2e-2: bf16 output rounding alone is ~2^-8 ~= 0.4%
-relative; on top of that the kernel's sequential online-softmax accumulation
-order differs from the reference's batched softmax+matmul, adding accumulation-
-order noise. 2e-2 is a conservative upper bound for both combined.
+relative; on top of that the kernels' accumulation order (sequential online
+softmax in v0, per-warp strided scan merged at the end in v1) differs from
+the reference's batched softmax+matmul, adding accumulation-order noise.
+2e-2 is a conservative upper bound for both combined.
 """
 
 import math
@@ -15,7 +16,7 @@ import torch
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "python"))
 
-from binding import gqa_decode_v0
+from binding import KERNELS
 from reference import attention_ref
 
 ATOL = 2e-2
@@ -68,9 +69,10 @@ def make_case(B, S_list, Hq, Hkv, bs, seed=0):
     return q, k_cache, v_cache, block_table, seq_lens
 
 
-def run_and_check(q, k_cache, v_cache, block_table, seq_lens, check_finite=False):
+def run_and_check(kernel_fn, q, k_cache, v_cache, block_table, seq_lens,
+                  check_finite=False):
     scale = 1.0 / math.sqrt(D)
-    out = gqa_decode_v0(q, k_cache, v_cache, block_table, seq_lens, scale)
+    out = kernel_fn(q, k_cache, v_cache, block_table, seq_lens, scale)
     torch.cuda.synchronize()
     ref = attention_ref(q, k_cache, v_cache, block_table, seq_lens, scale)
     if check_finite:
@@ -96,17 +98,20 @@ CASES = {
 }
 
 
+@pytest.mark.parametrize("kernel", list(KERNELS.keys()))
 @pytest.mark.parametrize("name", list(CASES.keys()))
-def test_gqa_decode_v0(name):
+def test_gqa_decode(kernel, name):
     cfg = CASES[name]
     case = make_case(cfg["B"], cfg["S_list"], cfg["Hq"], cfg["Hkv"], cfg["bs"], seed=0)
-    run_and_check(*case)
+    run_and_check(KERNELS[kernel], *case)
 
 
-def test_gqa_decode_v0_large_logits():
+@pytest.mark.parametrize("kernel", list(KERNELS.keys()))
+def test_gqa_decode_large_logits(kernel):
     cfg = CASES["a_base"]
     q, k_cache, v_cache, block_table, seq_lens = make_case(
         cfg["B"], cfg["S_list"], cfg["Hq"], cfg["Hkv"], cfg["bs"], seed=0
     )
     q = (q.float() * 50.0).to(torch.bfloat16)
-    run_and_check(q, k_cache, v_cache, block_table, seq_lens, check_finite=True)
+    run_and_check(KERNELS[kernel], q, k_cache, v_cache, block_table, seq_lens,
+                  check_finite=True)
