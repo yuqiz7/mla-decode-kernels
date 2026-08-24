@@ -1,4 +1,4 @@
-"""Single-shape benchmark for the GQA decode kernels (--kernel v0|v1)."""
+"""Single-shape benchmark for the GQA decode kernels (--kernel v0|v1|v2)."""
 
 import argparse
 import json
@@ -10,44 +10,11 @@ import time
 
 import torch
 
+sys.path.insert(0, os.path.dirname(__file__))
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "python"))
 
 from binding import KERNELS
-from reference import attention_ref
-
-D = 128
-HBM_PEAK_BYTES_PER_S = 3.35e12  # H100 SXM HBM3
-
-
-def make_case(B, S, Hq, Hkv, bs, seed=0):
-    torch.manual_seed(seed)
-    device = "cuda"
-    n_blocks = (S + bs - 1) // bs
-    pool = B * n_blocks
-    q = (torch.randn(B, Hq, D, device=device) * 0.5).to(torch.bfloat16)
-    k_cache = torch.randn(pool, bs, Hkv, D, device=device, dtype=torch.bfloat16) * 0.5
-    v_cache = torch.randn(pool, bs, Hkv, D, device=device, dtype=torch.bfloat16) * 0.5
-    k_cache = k_cache.contiguous()
-    v_cache = v_cache.contiguous()
-    perm = torch.randperm(pool).to(torch.int32)
-    block_table = perm.reshape(B, n_blocks).to(device)
-    seq_lens = torch.full((B,), S, dtype=torch.int32, device=device)
-    return q, k_cache, v_cache, block_table, seq_lens
-
-
-def spot_check(kernel_fn, q, k_cache, v_cache, block_table, seq_lens, scale):
-    nb = min(2, q.shape[0])
-    out = kernel_fn(q, k_cache, v_cache, block_table, seq_lens, scale)
-    torch.cuda.synchronize()
-    ref = attention_ref(
-        q[:nb], k_cache, v_cache, block_table[:nb], seq_lens[:nb], scale
-    )
-    out_f = out[:nb].float()
-    max_abs = (out_f - ref).abs().max().item()
-    assert torch.allclose(out_f, ref, atol=2e-2, rtol=2e-2), (
-        f"spot check failed on first {nb} requests: max-abs={max_abs:.4e}"
-    )
-    print(f"spot check on first {nb} requests passed (max-abs={max_abs:.4e})")
+from common import D, kv_bytes_of, make_case, sol_ms_of, spot_check, time_kernel
 
 
 def query_clocks():
@@ -89,26 +56,18 @@ def main():
         torch.cuda.synchronize()
         return
 
-    spot_check(kernel_fn, q, k_cache, v_cache, block_table, seq_lens, scale)
+    nb, max_abs = spot_check(
+        kernel_fn, q, k_cache, v_cache, block_table, seq_lens, scale
+    )
+    print(f"spot check on first {nb} requests passed (max-abs={max_abs:.4e})")
 
-    for _ in range(10):
-        kernel_fn(q, k_cache, v_cache, block_table, seq_lens, scale)
-    torch.cuda.synchronize()
+    median_ms = time_kernel(
+        lambda: kernel_fn(q, k_cache, v_cache, block_table, seq_lens, scale),
+        warmup=10, runs=50,
+    )
 
-    times = []
-    start = torch.cuda.Event(enable_timing=True)
-    end = torch.cuda.Event(enable_timing=True)
-    for _ in range(50):
-        start.record()
-        kernel_fn(q, k_cache, v_cache, block_table, seq_lens, scale)
-        end.record()
-        torch.cuda.synchronize()
-        times.append(start.elapsed_time(end))
-    times.sort()
-    median_ms = times[len(times) // 2]
-
-    kv_bytes = args.B * args.S * args.Hkv * D * 2 * 2  # K+V, bf16
-    sol_ms = kv_bytes / HBM_PEAK_BYTES_PER_S * 1e3
+    kv_bytes = kv_bytes_of(args.B, args.S, args.Hkv)
+    sol_ms = sol_ms_of(args.B, args.S, args.Hkv)
     pct_of_sol = sol_ms / median_ms * 100.0
     clocks = query_clocks()
 
