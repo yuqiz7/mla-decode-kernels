@@ -1,4 +1,4 @@
-"""JIT build of the gqa_decode_v0 extension via torch.utils.cpp_extension.load."""
+"""JIT build of the gqa_decode extension via torch.utils.cpp_extension.load."""
 
 import os
 
@@ -9,9 +9,10 @@ _BUILD_DIR = os.path.join(_REPO_ROOT, "build")
 os.makedirs(_BUILD_DIR, exist_ok=True)
 
 _ext = load(
-    name="gqa_decode_v0_ext",
+    name="gqa_decode_ext",
     sources=[
         os.path.join(_REPO_ROOT, "kernels", "gqa_decode", "v0_naive.cu"),
+        os.path.join(_REPO_ROOT, "kernels", "gqa_decode", "v1_vectorized.cu"),
         os.path.join(_REPO_ROOT, "python", "gqa_decode_ext.cpp"),
     ],
     build_directory=_BUILD_DIR,
@@ -21,3 +22,6 @@ _ext = load(
 )
 
 gqa_decode_v0 = _ext.gqa_decode_v0
+gqa_decode_v1 = _ext.gqa_decode_v1
+
+KERNELS = {"v0": gqa_decode_v0, "v1": gqa_decode_v1}

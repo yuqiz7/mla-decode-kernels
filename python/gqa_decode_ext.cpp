@@ -4,9 +4,15 @@
 
 #include "gqa_decode.h"
 
-torch::Tensor gqa_decode_v0(torch::Tensor q, torch::Tensor k_cache,
-                            torch::Tensor v_cache, torch::Tensor block_table,
-                            torch::Tensor seq_lens, double scale) {
+using launch_fn_t = void (*)(const __nv_bfloat16*, const __nv_bfloat16*,
+                             const __nv_bfloat16*, const int*, const int*,
+                             __nv_bfloat16*, int, int, int, int, int, float,
+                             cudaStream_t);
+
+static torch::Tensor gqa_decode_run(launch_fn_t launch, torch::Tensor q,
+                                    torch::Tensor k_cache, torch::Tensor v_cache,
+                                    torch::Tensor block_table,
+                                    torch::Tensor seq_lens, double scale) {
   TORCH_CHECK(q.is_cuda(), "q must be a CUDA tensor");
   TORCH_CHECK(q.scalar_type() == torch::kBFloat16, "q must be bf16");
   TORCH_CHECK(q.is_contiguous(), "q must be contiguous");
@@ -52,7 +58,7 @@ torch::Tensor gqa_decode_v0(torch::Tensor q, torch::Tensor k_cache,
   auto out = torch::empty_like(q);
   cudaStream_t stream = at::cuda::getCurrentCUDAStream();
 
-  gqa_decode_v0_launch(
+  launch(
       reinterpret_cast<const __nv_bfloat16*>(q.data_ptr()),
       reinterpret_cast<const __nv_bfloat16*>(k_cache.data_ptr()),
       reinterpret_cast<const __nv_bfloat16*>(v_cache.data_ptr()),
@@ -63,7 +69,23 @@ torch::Tensor gqa_decode_v0(torch::Tensor q, torch::Tensor k_cache,
   return out;
 }
 
+torch::Tensor gqa_decode_v0(torch::Tensor q, torch::Tensor k_cache,
+                            torch::Tensor v_cache, torch::Tensor block_table,
+                            torch::Tensor seq_lens, double scale) {
+  return gqa_decode_run(gqa_decode_v0_launch, q, k_cache, v_cache, block_table,
+                        seq_lens, scale);
+}
+
+torch::Tensor gqa_decode_v1(torch::Tensor q, torch::Tensor k_cache,
+                            torch::Tensor v_cache, torch::Tensor block_table,
+                            torch::Tensor seq_lens, double scale) {
+  return gqa_decode_run(gqa_decode_v1_launch, q, k_cache, v_cache, block_table,
+                        seq_lens, scale);
+}
+
 PYBIND11_MODULE(TORCH_EXTENSION_NAME, m) {
   m.def("gqa_decode_v0", &gqa_decode_v0,
         "GQA decode v0 naive kernel (paged KV, bf16)");
+  m.def("gqa_decode_v1", &gqa_decode_v1,
+        "GQA decode v1 vectorized kernel (paged KV, bf16)");
 }
