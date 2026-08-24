@@ -69,12 +69,17 @@ def main():
     ap.add_argument("--Hkv", type=int, default=8)
     ap.add_argument("--bs", type=int, default=16)
     ap.add_argument("--kernel", choices=sorted(KERNELS.keys()), default="v0")
+    ap.add_argument("--num-splits", type=int, default=8,
+                    help="split-KV segment count (v2 only)")
     ap.add_argument("--ncu-mode", action="store_true",
                     help="run the kernel exactly once, no warmup, no timing")
     args = ap.parse_args()
 
     scale = 1.0 / math.sqrt(D)
-    kernel_fn = KERNELS[args.kernel]
+    if args.kernel == "v2":
+        kernel_fn = lambda *a: KERNELS["v2"](*a, num_splits=args.num_splits)
+    else:
+        kernel_fn = KERNELS[args.kernel]
     q, k_cache, v_cache, block_table, seq_lens = make_case(
         args.B, args.S, args.Hq, args.Hkv, args.bs
     )
@@ -116,6 +121,7 @@ def main():
     result = {
         "kernel": args.kernel,
         "B": args.B, "S": args.S, "Hq": args.Hq, "Hkv": args.Hkv, "bs": args.bs,
+        "num_splits": args.num_splits if args.kernel == "v2" else None,
         "median_ms": median_ms,
         "kv_bytes": kv_bytes,
         "sol_ms": sol_ms,
