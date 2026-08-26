@@ -29,9 +29,11 @@ Version 2025.1.0.0 (build 35583870) (public-release)
 ```
 
 Differences vs the Lambda environment (`docs/g0/versions.txt`): driver
-570.211.01 vs 580.105.08, torch 2.8.0 vs 2.7.0, sanitizer 2025.1.0.0 vs
-2025.1.1.0. The CUDA toolkit build (cuda_12.8.r12.8/compiler.35583870_0) is
-identical, so the kernels compile to the same SASS as on Lambda.
+570.211.01 vs 580.105.08 and torch 2.8.0 vs 2.7.0 (the `Version 2025.1.1.0`
+line in versions.txt is Nsight Compute, which is unavailable on this pod and
+not needed for sanitizer runs). The CUDA toolkit build
+(cuda_12.8.r12.8/compiler.35583870_0) is identical, so the kernels compile to
+the same SASS as on Lambda.
 
 ## What was run
 
